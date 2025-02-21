@@ -155,7 +155,7 @@
 <div class="content">
     <div class="header">
         <div><strong>FIT4LIFE</strong></div>
-        <div><a href="inscription.html">Inscription</a></div>
+        <div><a href="#">Inscription</a></div>
     </div>
 
     <section class="midHeading">
