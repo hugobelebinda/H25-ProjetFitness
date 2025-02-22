@@ -1,5 +1,16 @@
 <script>
     let darkMode = true;
+    import Inscription from "./Inscription.svelte";
+
+  let afficherInscription = false;
+
+  function ouvrirInscription() {
+    afficherInscription = true;
+  }
+
+  function fermerInscription() {
+    afficherInscription = false;
+  }
 </script>
 
 <style>
@@ -10,16 +21,9 @@
 		
     }
 
-    body {
-        font-family: Arial, sans-serif;
-		height: 100%;
-        background-color:#181818;
-        color: white;
-        display: flex;
-    }
 
-    
     .sidebar {
+        margin-top: -10px;
         width: 250px;
         height: 100vh;
         background: #181818;
@@ -58,7 +62,7 @@
     }
 
     .header {
-		margin-top: -40px;
+		margin-top: -80px;
         display: flex;
         justify-content: space-between;
 		color: white;
@@ -153,10 +157,17 @@
 </div>
 
 <div class="content">
+   
     <div class="header">
         <div><strong>FIT4LIFE</strong></div>
-        <div><a href="#">Inscription</a></div>
-    </div>
+        <div>
+          <button on:click={ouvrirInscription}><strong>Inscription<strong></button>
+        </div>
+      </div>
+      
+      {#if afficherInscription}
+        <Inscription fermerInscription={fermerInscription} />
+      {/if}
 
     <section class="midHeading">
         <h1><img src="https://mail.google.com/mail/u/0?ui=2&ik=9e853468ec&attid=0.1&permmsgid=msg-a:r6906140957147156578&th=194d4e5453841c19&view=att&disp=safe&realattid=f_m6rk1zc80&zw" alt="icon"></h1>
