@@ -136,7 +136,7 @@
 <div class="sidebar">
     <h2>
 		FIT4LIFE 
-		<img src="https://mail.google.com/mail/u/0?ui=2&ik=9e853468ec&attid=0.1&permmsgid=msg-a:r6906140957147156578&th=194d4e5453841c19&view=att&disp=safe&realattid=f_m6rk1zc80&zw" alt="icon">
+		<img src="/logo.png" alt="Logo" />
 		 </h2>
     <a href="#">Plan d'entraînement</a>
     <a href="#">Plan nutritionnel</a>
@@ -158,7 +158,7 @@
       
 
     <section class="midHeading">
-        <h1><img src="https://mail.google.com/mail/u/0?ui=2&ik=9e853468ec&attid=0.1&permmsgid=msg-a:r6906140957147156578&th=194d4e5453841c19&view=att&disp=safe&realattid=f_m6rk1zc80&zw" alt="icon"></h1>
+        <h1><img src="/logo.png" alt="Logo" /></h1>
         <p>Le site qui vous permettra de rester fit pour la vie!</p>
         <button>Évaluation</button>
     </section>
