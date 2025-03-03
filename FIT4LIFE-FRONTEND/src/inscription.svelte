@@ -1,12 +1,15 @@
 <script>
     import { navigate } from "svelte-routing";
+    import { Link } from "svelte-routing";
   
     let nom = "";
+    let nomFamille = "";
+    let username = "";
     let email = "";
     let password = "";
   
     function inscrire() {
-      if (!nom || !email || !password) {
+      if (!nom || !email || !password || !username || !nomFamille) {
         alert("Veuillez remplir tous les champs.");
         return;
       }
@@ -14,70 +17,82 @@
       alert("Inscription réussie ! Redirection en cours...");
   
       setTimeout(() => {
-        fermerInscription(); 
+        navigate("/");
       }, 750);
     }
   </script>
   
   <style>
-  
-    .form-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
-      width: 320px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      top: 38%; 
-      left: 50%;
-      transform: translate(-50%, -50%);
+      .form-content {
+        background: #222;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
+        width: 350px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
-  
+
     .form-content h2 {
-      color: #18a888;
-      margin-bottom: 20px;
+        color: #18a888;
+        margin-bottom: 20px;
     }
-  
+
     .form-content input {
-      width: 300px;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 5px;
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
     }
-  
+
     .form-content button {
-      width: 100%;
-      padding: 10px;
-      background: #18a888;
-      border: none;
-      color: white;
-      font-size: 1.2em;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.3s;
+        width: 100%;
+        padding: 12px;
+        background: #18a888;
+        border: none;
+        color: white;
+        font-size: 1.2em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
     }
-  
+
     .form-content button:hover {
-      background: white;
-      color: #18a888;
+        background: white;
+        color: #18a888;
     }
+
+    .lien-connexion {
+        margin-top: 15px;
+        font-size: 14px;
+        color: white; 
+    }
+
+   
   </style>
   
   <div class="form-content">
       <h2>Inscription</h2>
       <form on:submit|preventDefault={inscrire}>
-          <input type="text" bind:value={nom} placeholder="Nom complet" required>
+          <input type="text" bind:value={nom} placeholder="Prénom" required>
+          <input type="text" bind:value={nomFamille} placeholder="Nom de famille" required>
+          <input type="text" bind:value={username} placeholder="Nom d'utilisateur" required>
           <input type="email" bind:value={email} placeholder="Email" required>
           <input type="password" bind:value={password} placeholder="Mot de passe" required>
           <button type="submit">S'inscrire</button>
       </form>
       <button on:click={() => navigate("/")} style="margin-top: 10px; background: red;">Annuler</button>
-      <p class="lien-connexion">Déjà inscrit ? <a href="/login">Connectez-vous</a></p>
+      <p class="lien-connexion">Déjà inscrit ? <Link to="/connexion">Connectez-vous</Link></p>
+
   </div>
   
