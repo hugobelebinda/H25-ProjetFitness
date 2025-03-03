@@ -240,7 +240,6 @@
     <section class="vidbackground">
         <video autoplay loop muted playsinline class="vidbackground-video">
             <source src="/videos/fitness.mp4" type="video/mp4">
-                <source src="/videos/fitness.webm" type="video/webm">
         </video>
         <div class="overlay"></div>
         <div class="vidbackground-content">
