@@ -1,5 +1,5 @@
 <script>
-     import { Link } from "svelte-routing";
+    import { Link } from "svelte-routing";
 </script>
 
 <style>
@@ -7,9 +7,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-		
     }
-
 
     .sidebar {
         margin-top: -10px;
@@ -21,6 +19,12 @@
         left: 0;
         top: 10;
     }
+    .sidebar img {
+    width: 110px;  
+    height: auto; 
+    margin-left: -17px;
+    vertical-align: middle; 
+}
 
     .sidebar h2 {
         color: #18a888;
@@ -37,48 +41,37 @@
 
     .sidebar a:hover {
         color: #18a888;
-    }
+    } 
 
-    
     .content {
         margin-left: 190px;
-		margin-right: -60px;
+        margin-right: -60px;
         padding: 50px;
         flex-grow: 1;
-		background-color: #181818;
-		position: relative;
-		height: 100vh;
+        background-color: #181818;
+        position: relative;
+        min-height: 100vh;
     }
 
     .header {
-		margin-top: -80px;
+        margin-top: -80px;
         display: flex;
         justify-content: space-between;
-		color: white;
+        color: white;
         align-items: center;
         padding: 15px;
         background: #181818;
         position: sticky;
         top: 0;
+        z-index: 10;
     }
 
-    .midHeading {
-        text-align: center;
-        padding: 50px;
-        background: #18a888;
+    .button-container {
+        display: flex;
+        gap: 10px; 
     }
 
-    .midHeading h1 {
-        font-size: 2.5em;
-		margin-bottom: 10px;
-    }
-
-	.midHeading p {
-		font-size: 1.2em;
-		margin-bottom: 20px;
-	}
-
-    .midHeading button {
+    .button {
         padding: 10px 20px;
         font-size: 1.2em;
         border: 2px solid #18a888;
@@ -86,98 +79,215 @@
         color: #18a888;
         cursor: pointer;
         border-radius: 20px;
-		transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
     }
 
-	.midHeading button:hover {
-		background: #18a888;
-		 color: white;
-		  border-color: white;
-		  transform: scale(1.05); 
-		  box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5); 
-	}
-
-    .sections {
-        display: flex;
-		color: white;
-		background-color: #18a888;
-        gap: 0px;
-		justify-content: flex-start;
-    
+    .button:hover {
+        background: #18a888;
+        color: white;
+        border-color: white;
+        transform: scale(1.05);
+        box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
     }
 
-    .textInfo {
+    .vidbackground {
+        position: relative;
+    width: 100%;
+    height: 80vh;
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    }
+
+    .overlay {
+        position: absolute;
         width: 100%;
-        text-align: center;
-        padding: 20px;
-        border-radius: 10px;
+        height: 100%;
+       
     }
 
-    .textInfo img {
+    .vidbackground-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+    .vidbackground-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .vidbackground-content h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+
+    .vidbackground-content button {
+        padding: 12px 24px;
+        background: #18a888;
+        border: none;
+        color: white;
+        font-size: 1.2em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .vidbackground-content button:hover {
+        background: white;
+        color: #18a888;
+    }
+
+    .avisClients {
+        text-align: center;
+        padding: 50px;
+        background: #18a888;
+        color: white;
+    }
+
+    .features {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 20px;
+    }
+
+    .feature {
+        width: 250px;
+    }
+
+    .feature img {
         width: 80px;
         margin-bottom: 10px;
     }
 
-
-	.sidebar img {
-        width: 80px;
-        height: 70px;
-		position: absolute;
+    .testimonie {
+        text-align: center;
+        padding: 50px;
+        background: #181818;
+        color: white;
     }
 
-	.midHeading img {
-        width: 160px;
-        height: 140px;
-		position: relative;
+    .testimonie-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
     }
 
+    .testimonieIndividuel {
+        width: 300px;
+        padding: 20px;
+        background: #222;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
+    }
+
+    .inscriptionAcceuil {
+        text-align: center;
+        padding: 50px;
+        background: #222;
+        color: white;
+    }
+
+    .inscriptionAcceuil button {
+        padding: 12px 24px;
+        background: #18a888;
+        border: none;
+        color: white;
+        font-size: 1.2em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .inscriptionAcceuil button:hover {
+        background: white;
+        color: #18a888;
+    }
 </style>
 
 <div class="sidebar">
-    <h2>
-		FIT4LIFE 
-		<img src="/logo.png" alt="Logo" />
-		 </h2>
+    <h2>FIT4LIFE 
+        <img src="/logo.png" alt="Logo" />
+    </h2>
     <a href="#">Plan d'entraînement</a>
     <a href="#">Plan nutritionnel</a>
-	<a href="#">Tableau de bord</a>
-	<a href="#">Suivi</a>
+    <a href="#">Tableau de bord</a>
+    <a href="#">Suivi</a>
     <a href="#">En savoir plus</a>
 </div>
 
 <div class="content">
-   
     <div class="header">
         <div><strong>FIT4LIFE</strong></div>
-        <div>
+        <div class="button-container">
+            <Link to="/connexion">
+                <button class="button"><strong>Connexion</strong></button>
+            </Link>
             <Link to="/inscription">
-                <button><strong>Inscription</strong></button>
+                <button class="button"><strong>Inscription</strong></button>
             </Link>
         </div>
-      </div>
-      
+    </div>
 
-    <section class="midHeading">
-        <h1><img src="/logo.png" alt="Logo" /></h1>
-        <p>Le site qui vous permettra de rester fit pour la vie!</p>
-        <button>Évaluation</button>
+    <section class="vidbackground">
+        <video autoplay loop muted playsinline class="vidbackground-video">
+            <source src="/videos/fitness.mp4" type="video/mp4">
+                <source src="/videos/fitness.webm" type="video/webm">
+        </video>
+        <div class="overlay"></div>
+        <div class="vidbackground-content">
+            <h1>Transforme ton corps, améliore ta vie</h1>
+            <p>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</p>
+            <button>Commencer maintenant</button>
+        </div>
     </section>
 
-    <section class="sections">
-        <div class="textInfo">
-            <img src="https://www.freeiconspng.com/uploads/transparent-medical-doctor-background-logos-18.png" alt="icon">
-            <h3>Objectif Santé</h3>
-            <p>Améliore ton bien-être global grâce à des conseils sur la récupération, le sommeil et la gestion du stress.</p>
+    
+
+    <section class="avisClients">
+        <h2>Pourquoi choisir Fit4Life ?</h2>
+        <div class="features">
+            <div class="feature">
+                <img src="https://www.freeiconspng.com/uploads/transparent-medical-doctor-background-logos-18.png" alt="icon">
+                <h3>Coachs professionnels</h3>
+                <p>Accède à des experts certifiés en fitness et nutrition.</p>
+            </div>
+            <div class="feature">
+                <img src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f3cb-2642.png" alt="icon">
+                <h3>Programmes adaptés</h3>
+                <p>Des plans personnalisés selon ton niveau et tes objectifs.</p>
+            </div>
+            <div class="feature">
+                <img src="https://static.thenounproject.com/png/583-200.png" alt="icon">
+                <h3>Communauté motivante</h3>
+                <p>Rejoins une communauté dynamique et partage tes progrès.</p>
+            </div>
         </div>
-        <div class="textInfo">
-            <img src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f3cb-2642.png" alt="icon">
-            <h3>Objectif Fitness</h3>
-            <p>Atteins tes objectifs sportifs avec des programmes d'entraînement personnalisés et un suivi de tes performances.</p>
+    </section>
+
+    <section class="testimonie">
+        <h2>Ce que nos membres disent</h2>
+        <div class="testimonie-container">
+            <div class="testimonieIndividuel">
+                <p>"Grâce à Fit4Life, j'ai perdu 10 kg et je me sens plus en forme que jamais !"</p>
+                <h4>- Abdelrazak Chafchadi.</h4>
+            </div>
         </div>
-        <div class="textInfo">
-            <img src="https://static.thenounproject.com/png/583-200.png" alt="icon">
-            <h3>Objectif Nutrition</h3>
-            <p>Optimise ton alimentation avec des plans de repas équilibrés adaptés à ton style de vie et à tes besoins.</p>
-        </div>
+    </section>
+
+    <section class="inscriptionAcceuil">
+        <h2>Prêt à transformer ta vie ?</h2>
+        <p>Rejoins-nous dès maintenant et commence ton parcours fitness !</p>
+        <Link to="/inscription">
+            <button>S'inscrire</button>
+        </Link>
     </section>
 </div>
