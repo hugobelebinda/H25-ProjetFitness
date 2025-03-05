@@ -1,5 +1,6 @@
 <script>
     import { Link } from "svelte-routing";
+    import Chatbot from "./lib/Chatbot.svelte"; 
 </script>
 
 <style>
@@ -205,6 +206,7 @@
     
 </style>
 
+
 <div class="sidebar">
     <h2>FIT4LIFE 
         <img src="/logo.png" alt="Logo" />
@@ -303,4 +305,5 @@
             <button>S'inscrire</button>
         </Link>
     </section>
+    <Chatbot />
 </div>

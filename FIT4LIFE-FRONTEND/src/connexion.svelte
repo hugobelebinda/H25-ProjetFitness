@@ -14,7 +14,6 @@
         alert("Connexion réussie ! Redirection en cours...");
 
         setTimeout(() => {
-       // navigate("/Tableau-de-bord"); (Pas encore créé)
             navigate("/");
         }, 750);
     }
