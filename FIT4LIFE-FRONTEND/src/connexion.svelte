@@ -5,19 +5,40 @@
     let email = "";
     let password = "";
 
-    function connecter() {
+    async function connecter() {
+
         if (!email || !password) {
             alert("Veuillez remplir tous les champs.");
             return;
         }
 
-        alert("Connexion réussie ! Redirection en cours...");
+        try {
+         const response = await fetch("http://localhost:4200/user/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
 
-        setTimeout(() => {
-       // navigate("/Tableau-de-bord"); (Pas encore créé)
-            navigate("/");
-        }, 750);
+        if (response.ok) {
+            alert("Connexion réussie ! Redirection en cours...");
+            console.log("User data:", data);
+
+            setTimeout(() => {
+                navigate("/Tableau-de-bord"); 
+            }, 750);
+        } else {
+            alert("Erreur de connexion : " + data.message);
+        }
+    } catch (error) {
+        console.error("Erreur lors de la connexion :", error);
+        alert("Une erreur s'est produite. Veuillez réessayer.");
     }
+}
 </script>
 
 <style>
