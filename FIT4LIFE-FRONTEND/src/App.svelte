@@ -4,6 +4,7 @@
     import Inscription from "./Inscription.svelte";
     import Connexion from "./Connexion.svelte";
     import EnSavoirPlus from "./EnSavoirPlus.svelte";
+    import Evaluation from "./Evaluation.svelte";
 </script>
 
 <Router>
@@ -11,4 +12,5 @@
     <Route path="/inscription" component={Inscription} />
     <Route path="/connexion" component={Connexion} />
     <Route path="/en-savoir-plus" component={EnSavoirPlus} />
+    <Route path="/evaluation" component={Evaluation} />
 </Router>

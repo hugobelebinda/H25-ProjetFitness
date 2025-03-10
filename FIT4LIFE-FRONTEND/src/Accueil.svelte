@@ -249,7 +249,9 @@
         <div class="vidbackground-content">
             <h1><strong>Transforme ton corps, améliore ta vie</strong></h1>
             <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
-            <button>Commencer maintenant</button>
+            <Link to="/evaluation">
+                <button class="button">Commencez maintenant</button>
+            </Link>
         </div>
     </section>
 
