@@ -14,13 +14,24 @@
         alert("Connexion réussie ! Redirection en cours...");
 
         setTimeout(() => {
-       // navigate("/Tableau-de-bord"); (Pas encore créé)
             navigate("/");
         }, 750);
     }
 </script>
 
 <style>
+
+    .page-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("https://t3.ftcdn.net/jpg/04/29/35/62/360_F_429356296_CVQ5LkC6Pl55kUNLqLisVKgTw9vjyif1.jpg") no-repeat center center/cover;
+    background-size: cover;
+    background-position: center;
+    
+    }
     .form-content {
         background: #222;
         padding: 25px;
@@ -82,7 +93,7 @@
     }
 
 </style>
-
+<div class="page-background">
 <div class="form-content">
     <h2>Connexion</h2>
     <form on:submit|preventDefault={connecter}>
@@ -92,4 +103,5 @@
     </form>
     <button class="annuler" on:click={() => navigate("/")} style="margin-top: 10px; background: red;" >Annuler</button>
     <p class="lien-connexion">Pas encore inscrit ? <Link to="/inscription">Créez un compte</Link></p>
+  </div>
 </div>

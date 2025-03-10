@@ -1,5 +1,6 @@
 <script>
     import { Link } from "svelte-routing";
+    import Chatbot from "./lib/Chatbot.svelte"; 
 </script>
 
 <style>
@@ -11,7 +12,7 @@
 
     .sidebar {
         margin-top: -10px;
-        width: 250px;
+        width: 200px;
         height: 100vh;
         background: #181818;
         padding: 20px;
@@ -31,17 +32,7 @@
         margin-bottom: 20px;
     }
 
-    .sidebar a {
-        display: block;
-        text-decoration: none;
-        color: white;
-        padding: 10px 0;
-        font-weight: bold;
-    }
-
-    .sidebar a:hover {
-        color: #18a888;
-    } 
+    
 
     .content {
         margin-left: 190px;
@@ -99,7 +90,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: white;
+    color: rgb(255, 255, 255);
     }
 
     .overlay {
@@ -124,7 +115,7 @@
     }
 
     .vidbackground-content h1 {
-        font-size: 2.5em;
+        font-size: 2.8em;
         margin-bottom: 20px;
     }
 
@@ -211,17 +202,30 @@
         background: white;
         color: #18a888;
     }
+
+    
 </style>
+
 
 <div class="sidebar">
     <h2>FIT4LIFE 
         <img src="/logo.png" alt="Logo" />
     </h2>
-    <a href="#">Plan d'entraînement</a>
-    <a href="#">Plan nutritionnel</a>
-    <a href="#">Tableau de bord</a>
-    <a href="#">Suivi</a>
-    <a href="#">En savoir plus</a>
+    <Link to="#">
+        <button class="button">Plan d'entrainement</button>
+    </Link>
+    <Link to="#">
+        <button class="button">Plan nutritionnel</button>
+    </Link>
+    <Link to="#">
+        <button class="button">Tableau de bord</button>
+    </Link>
+    <Link to="#">
+        <button class="button">Suivi</button>
+    </Link>
+    <Link to="/en-savoir-plus">
+        <button class="button">En savoir plus</button>
+    </Link>
 </div>
 
 <div class="content">
@@ -240,13 +244,14 @@
     <section class="vidbackground">
         <video autoplay loop muted playsinline class="vidbackground-video">
             <source src="/videos/fitness.mp4" type="video/mp4">
-                <source src="/videos/fitness.webm" type="video/webm">
         </video>
         <div class="overlay"></div>
         <div class="vidbackground-content">
-            <h1>Transforme ton corps, améliore ta vie</h1>
-            <p>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</p>
-            <button>Commencer maintenant</button>
+            <h1><strong>Transforme ton corps, améliore ta vie</strong></h1>
+            <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
+            <Link to="/evaluation">
+                <button class="button">Commencez maintenant</button>
+            </Link>
         </div>
     </section>
 
@@ -258,7 +263,7 @@
             <div class="feature">
                 <img src="https://www.freeiconspng.com/uploads/transparent-medical-doctor-background-logos-18.png" alt="icon">
                 <h3>Coachs professionnels</h3>
-                <p>Accède à des experts certifiés en fitness et nutrition.</p>
+                <p>Créer par des experts certifiés en fitness et nutrition.</p>
             </div>
             <div class="feature">
                 <img src="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/512px/1f3cb-2642.png" alt="icon">
@@ -278,7 +283,19 @@
         <div class="testimonie-container">
             <div class="testimonieIndividuel">
                 <p>"Grâce à Fit4Life, j'ai perdu 10 kg et je me sens plus en forme que jamais !"</p>
-                <h4>- Abdelrazak Chafchadi.</h4>
+                <h4>- Abdelrazak C.</h4>
+            </div>
+            <div class="testimonieIndividuel">
+                <p>"Ce site est insane!!!"</p>
+                <h4>- Gaetan L.</h4>
+            </div>
+            <div class="testimonieIndividuel">
+                <p>"J'ai réussi à atteindre mon objectif en seulement quelques semaines grace à ce site, je recommende!!"</p>
+                <h4>- Aboubakar B.</h4>
+            </div>
+            <div class="testimonieIndividuel">
+                <p>"Très bon site, facile à utiliser, comme Strava mais pour le gym."</p>
+                <h4>- David D.</h4>
             </div>
         </div>
     </section>
@@ -290,4 +307,5 @@
             <button>S'inscrire</button>
         </Link>
     </section>
+    <Chatbot />
 </div>

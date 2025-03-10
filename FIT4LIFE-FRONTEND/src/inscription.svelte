@@ -23,6 +23,20 @@
   </script>
   
   <style>
+
+    .page-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("https://images.unsplash.com/photo-1544033527-b192daee1f5b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHVtYmVsbHN8ZW58MHx8MHx8fDA%3D") no-repeat center center/cover;
+    background-size: cover;
+    background-position: center;
+    }
+
+
+    
       .form-content {
         background: #222;
         padding: 25px;
@@ -80,7 +94,7 @@
 
    
   </style>
-  
+  <div class="page-background">
   <div class="form-content">
       <h2>Inscription</h2>
       <form on:submit|preventDefault={inscrire}>
@@ -93,6 +107,6 @@
       </form>
       <button on:click={() => navigate("/")} style="margin-top: 10px; background: red;">Annuler</button>
       <p class="lien-connexion">Déjà inscrit ? <Link to="/connexion">Connectez-vous</Link></p>
-
+    </div>
   </div>
   

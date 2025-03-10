@@ -6,8 +6,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import css from 'rollup-plugin-css-only';
 import copy from 'rollup-plugin-copy';
+import { config } from 'dotenv';
 
 
+config();
 const production = !process.env.ROLLUP_WATCH;
 
 function serve() {
