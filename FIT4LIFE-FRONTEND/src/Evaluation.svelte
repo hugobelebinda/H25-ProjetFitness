@@ -19,7 +19,18 @@
     const experiences = ["Débutant", "Intermédiaire", "Avancé"];
     const entrainements = ["Push Pull Legs", "Full Body", "Split classique", "Entraînement fonctionnel", "Full cardio (HIIT et cardio)", "CrossFit"];
     const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
-    const poids = ["45 kg", "50 kg", "55 kg", "60 kg", "65 kg", "70 kg", "75 kg", "80 kg", "85 kg", "90 kg", "95 kg", "100 kg", "105 kg", "110 kg", "115 kg", "120 kg", "125 kg", "130 kg", "135 kg", "140 kg", "145 kg", "150 kg"];
+    const poids = [
+    "40 kg", "42 kg", "44 kg", "46 kg", "48 kg", "50 kg",
+    "52 kg", "54 kg", "56 kg", "58 kg", "60 kg", "62 kg",
+    "64 kg", "66 kg", "68 kg", "70 kg", "72 kg", "74 kg",
+    "76 kg", "78 kg", "80 kg", "82 kg", "84 kg", "86 kg",
+    "88 kg", "90 kg", "92 kg", "94 kg", "96 kg", "98 kg",
+    "100 kg", "102 kg", "104 kg", "106 kg", "108 kg", "110 kg",
+    "112 kg", "114 kg", "116 kg", "118 kg", "120 kg", "122 kg",
+    "124 kg", "126 kg", "128 kg", "130 kg", "132 kg", "134 kg",
+    "136 kg", "138 kg", "140 kg", "142 kg", "144 kg", "146 kg",
+    "148 kg", "150 kg"
+    ];
     const budgets = ["$100", "$150", "$200", "$250", "$300", "$350", "$400", "$450", "$500"];
     const plansNutrition = ["Aucun", "Régime cétogène", "Végétarien", "Végan", "Régime paléo", "Régime méditerranéen", "Alimentation flexible", "High Protein"];
 
@@ -161,7 +172,7 @@
         </div>
 
         <div class="input-group">
-            <label>Poids Actuel</label>
+            <label>Poids Actuel (Selectionnez à la hausse)</label>
             <select bind:value={poidsActuel}>
                 {#each poids as p}
                     <option value={p}>{p}</option>

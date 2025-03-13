@@ -211,16 +211,16 @@
     <h2>FIT4LIFE 
         <img src="/logo.png" alt="Logo" />
     </h2>
-    <Link to="#">
+    <Link to="/plan-entrainement">
         <button class="button">Plan d'entrainement</button>
     </Link>
-    <Link to="#">
+    <Link to="/plan-nutritionnel">
         <button class="button">Plan nutritionnel</button>
     </Link>
-    <Link to="#">
+    <Link to="/tableau-de-bord">
         <button class="button">Tableau de bord</button>
     </Link>
-    <Link to="#">
+    <Link to="/suivi">
         <button class="button">Suivi</button>
     </Link>
     <Link to="/en-savoir-plus">
