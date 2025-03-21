@@ -1,8 +1,8 @@
 <script>
     import { Router, Route } from "svelte-routing";
     import Accueil from "./Accueil.svelte";
-    import Inscription from "./Inscription.svelte";
-    import Connexion from "./Connexion.svelte";
+    import Inscription from "./Inscription.svelte"; 
+    import Connexion from "./Connexion.svelte";    
     import EnSavoirPlus from "./EnSavoirPlus.svelte";
     import Evaluation from "./Evaluation.svelte";
     import TableauDeBord from "./TableauDeBord.svelte";
@@ -10,7 +10,8 @@
     import PlanEntrainement from "./PlanEntrainement.svelte";
     import PlanNutritionnel from "./PlanNutritionnel.svelte";
     import AjoutExercice from "./AjoutExercice.svelte";
-</script>
+  </script>
+  
 
 <Router>
     <Route path="/" component={Accueil} />
