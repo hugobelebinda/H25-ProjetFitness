@@ -1,6 +1,15 @@
 <script>
-    import { Link } from "svelte-routing";
+    import { Link, navigate } from "svelte-routing";
     import Chatbot from "./lib/Chatbot.svelte"; 
+    import { user, logout } from './common/auth'; // ✅ Import du store
+
+    let currentUser;
+    $: currentUser = $user; // ✅ On réagit aux changements du store
+
+    function handleLogout() {
+        logout(); // ✅ Réinitialise le store
+        navigate('/'); // Optionnel : redirige vers l'accueil
+    }
 </script>
 
 <style>
@@ -231,13 +240,22 @@
 <div class="content">
     <div class="header">
         <div><strong>FIT4LIFE</strong></div>
-        <div class="button-container">
-            <Link to="/connexion">
-                <button class="button"><strong>Connexion</strong></button>
-            </Link>
-            <Link to="/inscription">
-                <button class="button"><strong>Inscription</strong></button>
-            </Link>
+
+        <div class="button-container" style="align-items: center;">
+            {#if currentUser}
+                <!-- ✅ Message de bienvenue -->
+                <p style="margin-right: 10px;">Bonjour {currentUser.nom || currentUser.username} !</p>
+
+                <!-- ✅ Bouton de déconnexion -->
+                <button class="button" on:click={handleLogout}><strong>Déconnexion</strong></button>
+            {:else}
+                <Link to="/connexion">
+                    <button class="button"><strong>Connexion</strong></button>
+                </Link>
+                <Link to="/inscription">
+                    <button class="button"><strong>Inscription</strong></button>
+                </Link>
+            {/if}
         </div>
     </div>
 
