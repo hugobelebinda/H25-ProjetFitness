@@ -69,5 +69,9 @@
     <Link to="/ajout-exercice">
         <button class="add-button">➕ Ajouter un exercice</button>
     </Link>
+
+    <Link to="/"> 
+        <button class="add-button"> Acceuil</button>
+    </Link>
 </div>
 
