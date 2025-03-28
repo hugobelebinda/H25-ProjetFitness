@@ -1,5 +1,8 @@
 <script>
+
     import { navigate } from "svelte-routing";
+    import { get } from "svelte/store";
+import { user } from "./common/auth"; 
 
     // Sélections par défaut
     let objectif = "Perdre du poids";
@@ -19,18 +22,7 @@
     const experiences = ["Débutant", "Intermédiaire", "Avancé"];
     const entrainements = ["Push Pull Legs", "Full Body", "Split classique", "Entraînement fonctionnel", "Full cardio (HIIT et cardio)", "CrossFit"];
     const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
-    const poids = [
-    "40 kg", "42 kg", "44 kg", "46 kg", "48 kg", "50 kg",
-    "52 kg", "54 kg", "56 kg", "58 kg", "60 kg", "62 kg",
-    "64 kg", "66 kg", "68 kg", "70 kg", "72 kg", "74 kg",
-    "76 kg", "78 kg", "80 kg", "82 kg", "84 kg", "86 kg",
-    "88 kg", "90 kg", "92 kg", "94 kg", "96 kg", "98 kg",
-    "100 kg", "102 kg", "104 kg", "106 kg", "108 kg", "110 kg",
-    "112 kg", "114 kg", "116 kg", "118 kg", "120 kg", "122 kg",
-    "124 kg", "126 kg", "128 kg", "130 kg", "132 kg", "134 kg",
-    "136 kg", "138 kg", "140 kg", "142 kg", "144 kg", "146 kg",
-    "148 kg", "150 kg"
-    ];
+    const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
     const budgets = ["$100", "$150", "$200", "$250", "$300", "$350", "$400", "$450", "$500"];
     const plansNutrition = ["Aucun", "Régime cétogène", "Végétarien", "Végan", "Régime paléo", "Régime méditerranéen", "Alimentation flexible", "High Protein"];
 
@@ -42,7 +34,52 @@
         }
     }
 
-    function soumettreEvaluation() {
+    async function soumettreEvaluation() {
+    const currentUser = get(user);
+
+    if (!currentUser || !currentUser._id) {
+        alert("Utilisateur non connecté.");
+        return;
+    }
+
+    const body = {
+        poids: parseInt(poidsActuel), // "70 kg" => 70
+        dispo: joursDisponibles.join(', '),
+        objectif,
+        poidsObjectif,
+        experience,
+        entrainement,
+        frequence,
+        planNutrition,
+        budget
+    };
+
+    try {
+        const res = await fetch(`http://localhost:4200/user/evaluation/${currentUser._id}`, {
+    method: "PUT",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+});
+
+        if (res.ok) {
+            console.log("✅ Évaluation enregistrée !");
+            navigate("/tableau-de-bord");
+        } else {
+            const data = await res.json();
+            alert("❌ Erreur : " + (data.message || "Échec de l'enregistrement"));
+        }
+    } catch (error) {
+        console.error("Erreur:", error);
+        alert("Erreur lors de l'envoi au serveur.");
+    }
+
+    console.log(get(user))
+}
+
+
+    /*function soumettreEvaluation() {
         alert(`Évaluation soumise :
         
     Objectif : ${objectif}
@@ -56,8 +93,11 @@
     Budget Hebdomadaire : ${budget}`);
 
         navigate("/tableau-de-bord");
-    }
+    } */
+    
 </script>
+
+
 
 <style>
     .page-wrapper {
