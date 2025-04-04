@@ -13,6 +13,9 @@ import { user } from "./common/auth";
     let frequence = "3 fois par semaine";
     let planNutrition = "Aucun";
     let budget = "$100";
+    let sexe = "Homme";
+    let taille = 170;
+
     
     let joursDisponibles = [];
     
@@ -51,7 +54,9 @@ import { user } from "./common/auth";
         entrainement,
         frequence,
         planNutrition,
-        budget
+        budget,
+       sexe,
+        taille: parseInt(taille)
     };
 
     try {
@@ -102,12 +107,14 @@ import { user } from "./common/auth";
 <style>
     .page-wrapper {
         position: relative;
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+    width: 100%;
+    min-height: 100vh; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    flex-direction: column;
+    padding: 40px 20px;
+    box-sizing: border-box;
     }
 
     .page-background {
@@ -228,6 +235,24 @@ import { user } from "./common/auth";
                 {/each}
             </select>
         </div>
+
+        <div class="input-group">
+            <label>Sexe</label>
+            <select bind:value={sexe}>
+                <option value="Homme">Homme</option>
+                <option value="Femme">Femme</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label>Taille (en cm)</label>
+            <select bind:value={taille}>
+                {#each Array.from({ length: 81 }, (_, i) => 140 + i) as cm}
+                    <option value={cm}>{cm} cm</option>
+                {/each}
+            </select>
+        </div>
+        
 
         <div class="input-group">
             <label>Expérience Fitness</label>
