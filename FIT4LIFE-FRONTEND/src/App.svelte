@@ -10,6 +10,7 @@
     import PlanEntrainement from "./PlanEntrainement.svelte";
     import PlanNutritionnel from "./PlanNutritionnel.svelte";
     import AjoutExercice from "./AjoutExercice.svelte";
+    import ExercicesDebutant from "./ExercicesDebutant.svelte";
   </script>
   
 
@@ -24,4 +25,5 @@
     <Route path="/plan-entrainement" component={PlanEntrainement} />
     <Route path="/plan-nutritionnel" component={PlanNutritionnel} />
     <Route path="/ajout-exercice" component={AjoutExercice} />
+    <Route path="/exercices-debutant" component={ExercicesDebutant} />
 </Router>
