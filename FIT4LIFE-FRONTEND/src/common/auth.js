@@ -13,5 +13,6 @@ export function login(userData) {
 // Fonction pour se déconnecter
 export function logout() {
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('userId');
     user.set(null);
 }

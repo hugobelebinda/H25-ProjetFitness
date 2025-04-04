@@ -1,95 +1,153 @@
 <script>
-    import { Link } from 'svelte-routing';
-    import { onMount } from 'svelte';
-    import { marked } from "marked";
-  
-    let planIA = "";
-    let loading = false;
+  import { Link } from 'svelte-routing';
+  import { marked } from "marked";
+  import { onMount } from "svelte";
 
-    function renderMarkdown(text) {
+  let planIA = "";
+  let loading = false;
+  let entrainements = [];
+
+  function renderMarkdown(text) {
     return marked.parse(text); 
   }
-  
-    async function genererAvecIA() {
-  loading = true;
-  planIA = "";
+
+  onMount(async () => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Vous devez être connecté pour voir vos entraînements.");
+    navigate("/connexion"); 
+    return;
+  }
 
   try {
-    const payload = {
-      objectif: "Perdre du poids",
-      experience: "Débutant",
-      type: "Full Body"
-    };
-
-    console.log("📤 Envoi de la requête à l'IA avec:", payload);
-
-    const res = await fetch("http://localhost:3001/api/generer-entrainement", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    console.log("📩 Réponse reçue:", data);
-
-    planIA = data.answer || "Une erreur est survenue.";
-  } catch (error) {
-    console.error("Erreur:", error);
-    planIA = "Erreur lors de la génération du plan.";
-  } finally {
-    loading = false;
+    const res = await fetch(`http://localhost:4201/user/entrainement/${userId}`);
+    if (res.ok) {
+      const data = await res.json();
+      entrainements = data.map((e, index) => ({
+        id: e._id || index,
+        titre: e.nom,
+        contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
+      }));
+    } else {
+      console.error("Erreur de récupération des entraînements.");
+    }
+  } catch (err) {
+    console.error("Erreur réseau :", err);
   }
-}
-  </script>
-  
-  <style>
-    .options {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      margin-top: 50px;
+});
+
+
+  async function genererAvecIA() {
+    loading = true;
+    planIA = "";
+
+    try {
+      const payload = {
+        objectif: "Perdre du poids",
+        experience: "Débutant",
+        type: "Full Body"
+      };
+
+      const res = await fetch("http://localhost:3001/api/generer-entrainement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      planIA = data.answer || "Une erreur est survenue.";
+
+      entrainements = [
+        ...entrainements,
+        { id: Date.now(), titre: "Plan IA", contenu: planIA }
+      ];
+    } catch (error) {
+      console.error("Erreur:", error);
+      planIA = "Erreur lors de la génération du plan.";
+    } finally {
+      loading = false;
     }
-  
-    button {
-      padding: 12px 24px;
-      background: #18a888;
-      border: none;
-      color: white;
-      font-size: 1.2em;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-  
-    button:hover {
-      background: white;
-      color: #18a888;
-    }
-  
-    .plan-ia {
-      margin-top: 40px;
-      padding: 20px;
-      background: #222;
-      color: white;
-      border-radius: 10px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
-  
-  <h2 style="text-align: center; color: #18a888; margin-top: 30px">Choisis ton plan d'entraînement</h2>
-  
-  <div class="options">
+  }
+</script>
+
+
+<style>
+  .container {
+    display: flex;
+    height: 100%;
+    padding: 30px;
+    gap: 30px;
+    color: white;
+  }
+
+  .sidebar {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  button {
+    padding: 12px 20px;
+    background: #18a888;
+    border: none;
+    color: white;
+    font-size: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    text-align: left;
+  }
+
+  button:hover {
+    background: white;
+    color: #18a888;
+  }
+
+  .plan-item {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  h2 {
+    color: #18a888;
+  }
+
+  .retour {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #18a888;
+    cursor: pointer;
+  }
+
+  .message-erreur {
+    color: red;
+    font-weight: bold;
+    margin-top: 50px;
+  }
+</style>
+
+<div class="container">
+  <!-- Colonne gauche -->
+  <div class="sidebar">
+    <Link to="/tableau-de-bord" class="retour">← Retour</Link>
+
     <Link to="/ajout-exercice">
-      <button>Créer mon propre programme</button>
+      <button>Créer un programme</button>
     </Link>
 
     <Link to="/exercices-debutant">
-      <button>Utiliser un plan pour débutants</button>
+      <button>Ajouter programme déjà fait</button>
     </Link>
-  
+
     <button on:click={genererAvecIA} disabled={loading}>
       {#if loading}
         Génération en cours...
@@ -98,11 +156,28 @@
       {/if}
     </button>
   </div>
-  
-  {#if planIA}
-  <div class="plan-ia">
-    <h3>Plan généré par Coach Flex 🤖</h3>
-    {@html renderMarkdown(planIA)}
+
+  <!-- Colonne droite -->
+  <div class="content">
+    {#if !localStorage.getItem("userId")}
+      <p class="message-erreur">
+        Vous devez être connecté pour voir vos entraînements.<br />
+        <Link to="/connexion" style="color:#18a888; text-decoration: underline">Se connecter</Link>
+      </p>
+    {:else}
+      <h2>Vos entraînements :</h2>
+
+      {#if entrainements.length === 0}
+        <p>Aucun entraînement pour le moment.</p>
+      {:else}
+        {#each entrainements as entrainement (entrainement.id)}
+          <div class="plan-item">
+            <h3>{entrainement.titre}</h3>
+            {@html renderMarkdown(entrainement.contenu)}
+          </div>
+        {/each}
+      {/if}
+    {/if}
   </div>
-{/if}
-  
+</div>
+

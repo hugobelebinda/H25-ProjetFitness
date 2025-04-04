@@ -23,7 +23,7 @@
       }
 
       try {
-          const response = await fetch("http://localhost:4200/user/login", {
+          const response = await fetch("http://localhost:4201/user/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, motDePasse: password })
@@ -36,6 +36,7 @@
               console.log("User data:", data);
 
               login(data.user); // ✅ Utilisation du store login
+              localStorage.setItem("userId", data.user._id);
 
               setTimeout(() => {
                   navigate("/");
