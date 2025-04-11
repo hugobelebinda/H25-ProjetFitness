@@ -1,4 +1,159 @@
 <script>
+import { Link, navigate } from 'svelte-routing';
+  import { marked } from "marked";
+  import { onMount } from "svelte";
+  import { logout } from "./common/auth";
+  let planIA = "";
+  let loading = false;
+  let entrainements = [];
+  let isConnected = false;
+
+  function renderMarkdown(text) {
+    return marked.parse(text); 
+  }
+
+  onMount(() => {
+    const token = localStorage.getItem("token");
+    isConnected = !!token;
+
+    if (!token) {
+      alert("Vous devez être connecté pour voir vos entraînements.");
+      navigate("/connexion");
+      return;
+    }
+
+    fetch("http://localhost:4201/user/entrainement", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        entrainements = data.map((e, index) => ({
+          id: e._id || index,
+          titre: e.nom,
+          contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
+        }));
+      })
+      .catch(err => {
+        console.error("Erreur réseau :", err);
+      });
+  });
+
+  async function genererAvecIA() {
+    loading = true;
+    planIA = "";
+
+    try {
+      const payload = {
+        objectif: "Perdre du poids",
+        experience: "Débutant",
+        type: "Full Body"
+      };
+
+      const res = await fetch("http://localhost:3001/api/generer-entrainement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      planIA = data.answer || "Une erreur est survenue.";
+
+      entrainements = [
+        ...entrainements,
+        { id: Date.now(), titre: "Plan IA", contenu: planIA }
+      ];
+    } catch (error) {
+      console.error("Erreur:", error);
+      planIA = "Erreur lors de la génération du plan.";
+    } finally {
+      loading = false;
+    }
+  }
+
+  function seDeconnecter() {
+    logout();
+    navigate("/connexion");
+  }
+  /*
+  import { Link, navigate } from 'svelte-routing';
+  import { marked } from "marked";
+  import { onMount } from "svelte";
+
+  let planIA = "";
+  let loading = false;
+  let entrainements = [];
+  let isConnected = false;
+
+  function renderMarkdown(text) {
+    return marked.parse(text); 
+  }
+
+  onMount(async () => {
+    const token = localStorage.getItem("token");
+    isConnected = !!token;
+
+    if (!token) {
+      alert("Vous devez être connecté pour voir vos entraînements.");
+      navigate("/connexion"); 
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:4201/user/entrainement", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        entrainements = data.map((e, index) => ({
+          id: e._id || index,
+          titre: e.nom,
+          contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
+        }));
+      } else {
+        console.error("Erreur de récupération des entraînements.");
+      }
+    } catch (err) {
+      console.error("Erreur réseau :", err);
+    }
+  });
+
+  async function genererAvecIA() {
+    loading = true;
+    planIA = "";
+
+    try {
+      const payload = {
+        objectif: "Perdre du poids",
+        experience: "Débutant",
+        type: "Full Body"
+      };
+
+      const res = await fetch("http://localhost:3001/api/generer-entrainement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      planIA = data.answer || "Une erreur est survenue.";
+
+      entrainements = [
+        ...entrainements,
+        { id: Date.now(), titre: "Plan IA", contenu: planIA }
+      ];
+    } catch (error) {
+      console.error("Erreur:", error);
+      planIA = "Erreur lors de la génération du plan.";
+    } finally {
+      loading = false;
+    }
+  } */
+  /*
   import { Link } from 'svelte-routing';
   import { marked } from "marked";
   import { onMount } from "svelte";
@@ -68,7 +223,7 @@
     } finally {
       loading = false;
     }
-  }
+  } */
 </script>
 
 
@@ -155,12 +310,67 @@
         Générer avec l'IA
       {/if}
     </button>
+
+    {#if isConnected}
+      <button on:click={seDeconnecter} style="margin-top: auto; background: red;">
+        Se déconnecter
+      </button>
+    {/if}
   </div>
 
   <!-- Colonne droite -->
+<div class="content">
+  {#if !isConnected}
+    <p class="message-erreur">
+      Vous devez être connecté pour voir vos entraînements.<br />
+      <Link to="/connexion" style="color:#18a888; text-decoration: underline">Se connecter</Link>
+    </p>
+  {:else}
+    <h2>Vos entraînements :</h2>
+
+    {#if entrainements.length === 0}
+      <p>Aucun entraînement pour le moment.</p>
+    {:else}
+      {#each entrainements as entrainement (entrainement.id)}
+        <div class="plan-item">
+          <h3>{entrainement.titre}</h3>
+          {@html renderMarkdown(entrainement.contenu)}
+        </div>
+      {/each}
+    {/if}
+  {/if} <!-- ✅ Fermeture du premier if ici -->
+</div>
+</div> <!-- ← fermeture de <div class="container"> -->
+
+
+  <!-- Colonne gauche 
+
+<div class="container">
+ 
+  <div class="sidebar">
+    <Link to="/tableau-de-bord" class="retour">← Retour</Link>
+
+    <Link to="/ajout-exercice">
+      <button>Créer un programme</button>
+    </Link>
+
+    <Link to="/exercices-debutant">
+      <button>Ajouter programme déjà fait</button>
+    </Link>
+
+    <button on:click={genererAvecIA} disabled={loading}>
+      {#if loading}
+        Génération en cours...
+      {:else}
+        Générer avec l'IA
+      {/if}
+    </button>
+  </div>
+
+Colonne droite 
   <div class="content">
-    {#if !localStorage.getItem("userId")}
-      <p class="message-erreur">
+    {#if !isConnected}
+    <p class="message-erreur">
         Vous devez être connecté pour voir vos entraînements.<br />
         <Link to="/connexion" style="color:#18a888; text-decoration: underline">Se connecter</Link>
       </p>
@@ -180,4 +390,4 @@
     {/if}
   </div>
 </div>
-
+-->

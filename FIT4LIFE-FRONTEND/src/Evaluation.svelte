@@ -60,28 +60,27 @@ import { user } from "./common/auth";
     };
 
     try {
-        const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
-    method: "PUT",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-});
+      const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
 
-        if (res.ok) {
-            console.log("✅ Évaluation enregistrée !");
-            navigate("/tableau-de-bord");
-        } else {
-            const data = await res.json();
-            alert("❌ Erreur : " + (data.message || "Échec de l'enregistrement"));
-        }
+      if (res.ok) {
+        console.log("✅ Évaluation enregistrée !");
+        navigate("/tableau-de-bord");
+      } else {
+        const data = await res.json();
+        alert("❌ Erreur : " + (data.message || "Échec de l'enregistrement"));
+      }
     } catch (error) {
-        console.error("Erreur:", error);
-        alert("Erreur lors de l'envoi au serveur.");
+      console.error("Erreur:", error);
+      alert("Erreur lors de l'envoi au serveur.");
     }
-
-    console.log(get(user))
-}
+  }
 
 
     /*function soumettreEvaluation() {

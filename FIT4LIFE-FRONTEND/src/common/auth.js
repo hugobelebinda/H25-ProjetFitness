@@ -1,18 +1,30 @@
 import { writable } from 'svelte/store';
 
-// Si l'utilisateur est dans le sessionStorage, il est connecté
+// Récupération du user et token
 const storedUser = sessionStorage.getItem('user');
-export const user = writable(storedUser ? JSON.parse(storedUser) : null);
+const storedToken = localStorage.getItem('token');
 
-// Fonction pour se connecter
-export function login(userData) {
+export const user = writable(storedUser ? JSON.parse(storedUser) : null);
+export const token = writable(storedToken || null);
+
+//  Fonction de connexion
+export function login(userData, jwtToken) {
     sessionStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', jwtToken);
     user.set(userData);
+    token.set(jwtToken);
 }
 
-// Fonction pour se déconnecter
+//  Fonction de déconnexion
 export function logout() {
     sessionStorage.removeItem('user');
-    sessionStorage.removeItem('userId');
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('userId'); // au cas où tu l’utilises encore
     user.set(null);
+    token.set(null);
+}
+
+//  Utilitaire
+export function isConnected() {
+    return !!localStorage.getItem('token');
 }
