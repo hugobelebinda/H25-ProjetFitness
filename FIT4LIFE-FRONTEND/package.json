@@ -21,6 +21,7 @@
     "svelte": "^3.55.0"
   },
   "dependencies": {
+    "chart.js": "^4.4.9",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "marked": "^15.0.7",

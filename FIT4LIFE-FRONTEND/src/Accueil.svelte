@@ -20,15 +20,47 @@
     }
 
     .sidebar {
-        margin-top: -10px;
-        width: 200px;
-        height: 100vh;
-        background: #181818;
-        padding: 20px;
-        position: absolute;
-        left: 0;
-        top: 10;
-    }
+  margin-top: -10px;
+  width: 220px;
+  height: 100vh;
+  background: #181818;
+  padding: 30px 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+  width: 100%;
+}
+
+:global(.nav-button) {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background: #111;
+  border: 2px solid #18a888;
+  color: #18a888;
+  text-decoration: none;
+  font-size: 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+:global(.nav-button:hover) {
+  background: #18a888;
+  color: white;
+  transform: scale(1.03);
+  box-shadow: 0 0 12px rgba(24, 168, 136, 0.6);
+}
+
     .sidebar img {
     width: 110px;  
     height: auto; 
@@ -40,8 +72,6 @@
         color: #18a888;
         margin-bottom: 20px;
     }
-
-    
 
     .content {
         margin-left: 190px;
@@ -217,25 +247,20 @@
 
 
 <div class="sidebar">
-    <h2>FIT4LIFE 
-        <img src="/logo.png" alt="Logo" />
+    <h2>
+      FIT4LIFE 
+      <img src="/logo.png" alt="Logo" />
     </h2>
-    <Link to="/plan-entrainement">
-        <button class="button">Plan d'entrainement</button>
-    </Link>
-    <Link to="/plan-nutritionnel">
-        <button class="button">Plan nutritionnel</button>
-    </Link>
-    <Link to="/tableau-de-bord">
-        <button class="button">Tableau de bord</button>
-    </Link>
-    <Link to="/suivi">
-        <button class="button">Suivi</button>
-    </Link>
-    <Link to="/en-savoir-plus">
-        <button class="button">En savoir plus</button>
-    </Link>
-</div>
+  
+    <nav class="sidebar-nav">
+      <Link to="/plan-entrainement" class="nav-button">📋 Plan d'entraînement</Link>
+      <Link to="/plan-nutritionnel" class="nav-button">🥗 Plan nutritionnel</Link>
+      <Link to="/tableau-de-bord" class="nav-button">📊 Tableau de bord</Link>
+      <Link to="/suivi" class="nav-button">📈 Suivi</Link>
+      <Link to="/en-savoir-plus" class="nav-button">ℹ️ En savoir plus</Link>
+    </nav>
+  </div>
+  
 
 <div class="content">
     <div class="header">
