@@ -48,80 +48,19 @@ async function enregistrerRoutine() {
     });
 
     if (res.ok) {
-      alert("✅ Entraînement enregistré !");
+      alert("Entraînement enregistré !");
       navigate("/tableau-de-bord");
     } else {
       const err = await res.json();
       console.error("Erreur serveur :", err);
-      alert("❌ Erreur : " + (err.message || "Échec de l'enregistrement"));
+      alert("Erreur : " + (err.message || "Échec de l'enregistrement"));
     }
   } catch (e) {
     console.error("Erreur réseau :", e);
-    alert("❌ Problème de connexion au serveur.");
+    alert("Problème de connexion au serveur.");
   }
 }
-    /*import { navigate } from "svelte-routing";
-  
-    let nomRoutine = "";
-    let exercices = [];
-  
-    function ajouterExercice() {
-      exercices = [
-        ...exercices,
-        {
-          nom: "",
-          series: 3,
-          repetitions: 10
-        }
-      ];
-    }
-  
-    function exercicesValides() {
-      return exercices.every(e => e.nom && e.series > 0 && e.repetitions > 0);
-    }
-  
-    async function enregistrerRoutine() {
-        
-        const userId = localStorage.getItem("userId");
-
-if (userId == null) {
-  alert("⚠️ Vous devez être connecté pour enregistrer un entraînement.");
-  console.error("Tentative d'enregistrement sans userId");
-  return;
-}
-  
-      if (!userId || !nomRoutine || exercices.length === 0 || !exercicesValides()) {
-        alert("Veuillez remplir tous les champs requis.");
-        return;
-      }
-  
-      const payload = {
-        userId,
-        nom: nomRoutine,
-        exercices
-      };
-  
-      try {
-        const res = await fetch("http://localhost:4201/user/entrainement", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-  
-        if (res.ok) {
-          const data = await res.json();
-          alert("✅ Entraînement enregistré !");
-          navigate("/tableau-de-bord");
-        } else {
-          const err = await res.json();
-          console.error("Erreur serveur :", err);
-          alert("❌ Erreur : " + (err.message || "Échec de l'enregistrement"));
-        }
-      } catch (e) {
-        console.error("Erreur réseau :", e);
-        alert("❌ Problème de connexion au serveur.");
-      }
-    } */
+   
   </script>
   
   

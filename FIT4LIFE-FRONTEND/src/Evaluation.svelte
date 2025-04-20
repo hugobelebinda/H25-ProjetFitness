@@ -83,21 +83,7 @@ import { user } from "./common/auth";
   }
 
 
-    /*function soumettreEvaluation() {
-        alert(`Évaluation soumise :
-        
-    Objectif : ${objectif}
-    Poids Actuel : ${poidsActuel}
-    Poids Objectif : ${poidsObjectif}
-    Expérience : ${experience}
-    Entraînement : ${entrainement}
-    Jours Disponibles : ${joursDisponibles.join(", ")}
-    Fréquence d'entraînement : ${frequence}
-    Plan Nutritionnel : ${planNutrition}
-    Budget Hebdomadaire : ${budget}`);
-
-        navigate("/tableau-de-bord");
-    } */
+  
     
 </script>
 
