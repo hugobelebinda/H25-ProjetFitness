@@ -1,14 +1,14 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import Chatbot from "./lib/Chatbot.svelte"; 
-    import { user, logout } from './common/auth'; // ✅ Import du store
+    import { user, logout } from './common/auth'; 
 
     let currentUser;
-    $: currentUser = $user; // ✅ On réagit aux changements du store
+    $: currentUser = $user; 
 
     function handleLogout() {
-        logout(); // ✅ Réinitialise le store
-        navigate('/'); // Optionnel : redirige vers l'accueil
+        logout(); 
+        navigate('/'); 
     }
 </script>
 
