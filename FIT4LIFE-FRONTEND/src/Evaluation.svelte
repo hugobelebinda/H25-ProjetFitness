@@ -39,11 +39,19 @@ import { user } from "./common/auth";
 
     async function soumettreEvaluation() {
     const currentUser = get(user);
+    
 
     if (!currentUser || !currentUser._id) {
         alert("Utilisateur non connecté.");
         return;
     }
+    
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+  alert("Token non trouvé, veuillez vous reconnecter.");
+  return;
+}
 
     const body = {
         poids: parseInt(poidsActuel), // "70 kg" => 70
@@ -60,7 +68,7 @@ import { user } from "./common/auth";
     };
 
     try {
-      const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
+      const res = await fetch(`http://localhost:4200/user/evaluation/${currentUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

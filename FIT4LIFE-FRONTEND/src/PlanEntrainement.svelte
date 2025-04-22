@@ -241,8 +241,8 @@ async function envoyerSuivi() {
       <button>Créer un programme</button>
     </Link>
 
-    <Link to="/exercices-debutant">
-      <button>Ajouter programme déjà fait</button>
+    <Link to="/programme-auto">
+      <button>Ajouter un programme déjà fait</button>
     </Link>
 
     <button on:click={genererAvecIA} disabled={loading}>
