@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { enregistrerRoutine } from "./services/routineService.js";
 
   let plan = "";
   let programme = {};
@@ -237,6 +238,14 @@
     programme = programmes[plan] || {};
   }
 
+  async function enregistrer(jour, exercices, index) {
+  const nomRoutine = `Jour ${index + 1} de l'entraînement ${plan}`;
+  await enregistrerRoutine(nomRoutine, exercices);
+}
+
+
+
+
   onMount(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user?.entrainement && programmes[user.entrainement]) {
@@ -246,6 +255,7 @@
     }
     loading = false;
   });
+
 </script>
 
 <style>
@@ -347,7 +357,7 @@
             </div>
           </div>
         {/each}
-        <button class="ajouter-btn">ajouter aux entraînements</button>
+        <button class="ajouter-btn"on:click={() => enregistrer(jour, exercices, i)}>ajouter aux entraînements</button>
       </div>
     {/each}
   </div>

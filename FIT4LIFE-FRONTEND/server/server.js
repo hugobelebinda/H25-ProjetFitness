@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/api/chat', async (req, res) => {
-    console.log("📡 Requête reçue:", req.body);
+    console.log("Requête reçue:", req.body);
 
     if (!GEMINI_API_KEY) {
         return res.status(500).json({ error: "Clé API Google Gemini manquante" });
@@ -40,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
         res.json({ answer: responseText });
 
     } catch (error) {
-        console.error("❌ Erreur API Gemini:", error);
+        console.error(" Erreur API Gemini:", error);
         res.status(500).json({ error: "Erreur de connexion avec Gemini" });
     }
 });
@@ -76,7 +76,7 @@ app.post('/api/generer-entrainement', async (req, res) => {
         const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Je n'ai pas compris.";
         res.json({ answer: responseText });
     } catch (e) {
-        console.error("❌ Erreur IA:", e);
+        console.error("Erreur IA:", e);
         res.status(500).json({ error: "Erreur IA" });
     }
 });
@@ -84,15 +84,15 @@ app.post('/api/generer-entrainement', async (req, res) => {
 
 
 const server = app.listen(PORT, () => {
-    console.log(`🚀 Serveur Express lancé sur http://localhost:${PORT}`);
+    console.log(`Serveur Express lancé sur http://localhost:${PORT}`);
 });
 
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-        console.error(`🚨 Le port ${PORT} est déjà utilisé, tentative sur un autre port...`);
+        console.error(`Le port ${PORT} est déjà utilisé, tentative sur un autre port...`);
         server.listen(PORT + 1);  
     } else {
-        console.error('❌ Erreur serveur:', err);
+        console.error('Erreur serveur:', err);
     }
 });
 
