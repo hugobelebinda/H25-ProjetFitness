@@ -6,10 +6,14 @@ import { user } from "./common/auth";
 
     // Sélections par défaut
     let objectif = "Perdre du poids";
+    
+   let age = 20;
+    
     let experience = "Débutant";
     let entrainement = "Push Pull Legs";
     let poidsActuel = "70 kg";
     let poidsObjectif = "65 kg";
+    let niveauActivite = 1.55; 
     let frequence = "3 fois par semaine";
     let planNutrition = "Aucun";
     let budget = "$100";
@@ -19,7 +23,9 @@ import { user } from "./common/auth";
     
     let joursDisponibles = [];
     
-    // Options disponibles
+  
+    const ages = Array.from({ length: 150 }, (_, i) => i + 1);
+
     const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
     const objectifs = ["Perdre du poids", "Gagner du muscle", "Garder la forme", "Améliorer mon endurance"];
     const experiences = ["Débutant", "Intermédiaire", "Avancé"];
@@ -28,7 +34,13 @@ import { user } from "./common/auth";
     const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
     const budgets = ["$100", "$150", "$200", "$250", "$300", "$350", "$400", "$450", "$500"];
     const plansNutrition = ["Aucun", "Régime cétogène", "Végétarien", "Végan", "Régime paléo", "Régime méditerranéen", "Alimentation flexible", "High Protein"];
-
+    const niveauxActivite = [
+    { label: "Repos (aucune activité)", value: 1.2 },
+    { label: "Léger (1-3 jours/semaine)", value: 1.375 },
+    { label: "Modéré (3-5 jours/semaine)", value: 1.55 },
+    { label: "Intense (6-7 jours/semaine)", value: 1.725 },
+    { label: "Très intense (2x/jour ou travail physique)", value: 1.9 }
+];
     function toggleJour(jour) {
         if (joursDisponibles.includes(jour)) {
             joursDisponibles = joursDisponibles.filter(j => j !== jour);
@@ -38,7 +50,10 @@ import { user } from "./common/auth";
     }
 
     async function soumettreEvaluation() {
+        //alert("Fonction appelée !");
     const currentUser = get(user);
+    
+
     
 
     if (!currentUser || !currentUser._id) {
@@ -54,7 +69,8 @@ import { user } from "./common/auth";
 }
 
     const body = {
-        poids: parseInt(poidsActuel), // "70 kg" => 70
+        poids: parseInt(poidsActuel), 
+        age: parseInt(age),
         dispo: joursDisponibles.join(', '),
         objectif,
         poidsObjectif,
@@ -64,11 +80,12 @@ import { user } from "./common/auth";
         planNutrition,
         budget,
        sexe,
-        taille: parseInt(taille)
+        taille: parseInt(taille),
+        niveauActivite: parseFloat(niveauActivite)
     };
 
     try {
-      const res = await fetch(`http://localhost:4200/user/evaluation/${currentUser._id}`, {
+      const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -78,13 +95,20 @@ import { user } from "./common/auth";
       });
 
       if (res.ok) {
-        console.log("✅ Évaluation enregistrée !");
+        const data = await res.json(); 
+        console.log("Évaluation enregistrée !");
+  console.log("Calories recommandées :", data.calories); 
+  console.log("Utilisateur mis à jour :", data.user);    
+  user.set(data.user); 
+
         navigate("/tableau-de-bord");
       } else {
         const data = await res.json();
-        alert("❌ Erreur : " + (data.message || "Échec de l'enregistrement"));
+        alert(" Erreur : " + (data.message || "Échec de l'enregistrement"));
+        
       }
     } catch (error) {
+
       console.error("Erreur:", error);
       alert("Erreur lors de l'envoi au serveur.");
     }
@@ -220,6 +244,17 @@ import { user } from "./common/auth";
             </select>
         </div>
 
+        
+        <div class="input-group">
+            <label>Age</label>
+            <select bind:value={age}>
+                {#each ages as a}
+                    <option value={a}>{a}</option>
+                {/each}
+            </select>
+        </div> 
+        
+
         <div class="input-group">
             <label>Poids Objectif</label>
             <select bind:value={poidsObjectif}>
@@ -255,6 +290,16 @@ import { user } from "./common/auth";
                 {/each}
             </select>
         </div>
+        
+        <div class="input-group">
+            <label>Niveau d'activité</label>
+            <select bind:value={niveauActivite}>
+                {#each niveauxActivite as na}
+                    <option value={na.value}>{na.label}</option>
+                {/each}
+            </select>
+        </div>
+        
 
         <div class="input-group">
             <label>Type d'Entraînement Préféré</label>
@@ -292,7 +337,7 @@ import { user } from "./common/auth";
                     <option value={pn}>{pn}</option>
                 {/each}
             </select>
-        </div>
+        </div> 
 
         <div class="input-group">
             <label>Budget Hebdomadaire</label>
