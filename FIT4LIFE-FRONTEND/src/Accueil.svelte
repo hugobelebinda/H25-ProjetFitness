@@ -293,8 +293,15 @@
             <h1><strong>Transforme ton corps, améliore ta vie</strong></h1>
             <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
             <Link to="/evaluation">
-                <button class="button">Commencez maintenant</button>
+                <button class="button">
+                    {#if currentUser}
+                        Réévaluer
+                    {:else}
+                        Commencez maintenant
+                    {/if}
+                </button>
             </Link>
+            
         </div>
     </section>
 
@@ -343,6 +350,7 @@
         </div>
     </section>
 
+    {#if !currentUser}
     <section class="inscriptionAcceuil">
         <h2>Prêt à transformer ta vie ?</h2>
         <p>Rejoins-nous dès maintenant et commence ton parcours fitness !</p>
@@ -350,5 +358,7 @@
             <button>S'inscrire</button>
         </Link>
     </section>
+{/if}
+
     <Chatbot />
 </div>

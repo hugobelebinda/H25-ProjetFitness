@@ -110,8 +110,20 @@ import { user } from "./common/auth";
     }
   }
 
+  $: poidsObjectifOptions = poids.filter(p => {
+    const poidsActuelKg = parseInt(poidsActuel); // "80 kg" → 80
+    const pKg = parseInt(p); // "65 kg" → 65
 
-  
+    if (objectif === "Perdre du poids") {
+        return pKg < poidsActuelKg;
+    } else if (objectif === "Gagner du muscle") {
+        return pKg > poidsActuelKg;
+    } else {
+        return true; // Aucun filtre pour les autres objectifs
+    }
+});
+
+
     
 </script>
 
@@ -254,11 +266,12 @@ import { user } from "./common/auth";
         <div class="input-group">
             <label>Poids Objectif</label>
             <select bind:value={poidsObjectif}>
-                {#each poids as p}
+                {#each poidsObjectifOptions as p}
                     <option value={p}>{p}</option>
                 {/each}
             </select>
         </div>
+        
 
         <div class="input-group">
             <label>Sexe</label>
