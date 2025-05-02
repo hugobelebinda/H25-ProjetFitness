@@ -16,7 +16,6 @@ import { user } from "./common/auth";
     let niveauActivite = 1.55; 
     let frequence = "3 fois par semaine";
     let planNutrition = "Aucun";
-    let budget = "$100";
     let sexe = "Homme";
     let taille = 170;
 
@@ -32,8 +31,6 @@ import { user } from "./common/auth";
     const entrainements = ["Push Pull Legs", "Full Body", "Split classique", "Entraînement fonctionnel", "Full cardio (HIIT et cardio)", "CrossFit"];
     const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
     const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
-    const budgets = ["$100", "$150", "$200", "$250", "$300", "$350", "$400", "$450", "$500"];
-    const plansNutrition = ["Aucun", "Régime cétogène", "Végétarien", "Végan", "Régime paléo", "Régime méditerranéen", "Alimentation flexible", "High Protein"];
     const niveauxActivite = [
     { label: "Repos (aucune activité)", value: 1.2 },
     { label: "Léger (1-3 jours/semaine)", value: 1.375 },
@@ -78,7 +75,6 @@ import { user } from "./common/auth";
         entrainement,
         frequence,
         planNutrition,
-        budget,
        sexe,
         taille: parseInt(taille),
         niveauActivite: parseFloat(niveauActivite)
@@ -326,24 +322,6 @@ import { user } from "./common/auth";
             <select bind:value={frequence}>
                 {#each frequences as f}
                     <option value={f}>{f}</option>
-                {/each}
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Plan Nutritionnel</label>
-            <select bind:value={planNutrition}>
-                {#each plansNutrition as pn}
-                    <option value={pn}>{pn}</option>
-                {/each}
-            </select>
-        </div> 
-
-        <div class="input-group">
-            <label>Budget Hebdomadaire</label>
-            <select bind:value={budget}>
-                {#each budgets as b}
-                    <option value={b}>{b}</option>
                 {/each}
             </select>
         </div>

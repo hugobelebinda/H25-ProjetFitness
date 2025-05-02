@@ -268,10 +268,10 @@
 
         <div class="button-container" style="align-items: center;">
             {#if currentUser}
-                <!-- ✅ Message de bienvenue -->
+                <!--  Message de bienvenue -->
                 <p style="margin-right: 10px;"><strong> Bonjour {currentUser.nom || currentUser.username} !</strong></p>
 
-                <!-- ✅ Bouton de déconnexion -->
+                <!--  Bouton de déconnexion -->
                 <button class="button" on:click={handleLogout}><strong>Déconnexion</strong></button>
             {:else}
                 <Link to="/connexion">

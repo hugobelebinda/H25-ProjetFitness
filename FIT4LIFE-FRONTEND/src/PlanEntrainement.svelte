@@ -235,7 +235,7 @@ async function envoyerSuivi() {
 <div class="container">
   <!-- Colonne gauche -->
   <div class="sidebar">
-    <Link to="/tableau-de-bord" class="retour">← Retour</Link>
+    <Link to=" " class="retour">← Retour</Link>
 
     <Link to="/ajout-exercice">
       <button>Créer un programme</button>
