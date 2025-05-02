@@ -1,5 +1,11 @@
 <script>
     import { Link } from "svelte-routing";
+
+    import { user } from './common/auth'; 
+
+    let currentUser;
+    $: currentUser = $user;
+
 </script>
 
 <style>
@@ -151,9 +157,12 @@
         </div>
     </div>
 
+    {#if !currentUser}
     <div class="content">
         <h2>Rejoignez-nous dès maintenant !</h2>
         <Link to="/inscription"><button>S'inscrire</button></Link>
-    </div> 
+    </div>
+{/if}
+
     </div>
 </div>

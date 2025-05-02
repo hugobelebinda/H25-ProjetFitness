@@ -84,6 +84,18 @@
       color: #666;
       font-style: italic;
     }
+
+    .section ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.section ul li {
+  margin: 8px 0;
+  color: #ddd;
+}
+
   </style>
   
   <div class="suivi-container">
@@ -94,9 +106,10 @@
   
     <div class="quick-stats">
       <div class="stat-box">
-        <h2>78.5 kg</h2>
+        <h2>{currentUser?.poids || '...' } kg</h2>
         <p>Poids actuel</p>
       </div>
+      
       <div class="stat-box">
         <h2>5 séances</h2>
         <p>cette semaine</p>
@@ -106,6 +119,19 @@
         <p>calories consommées</p>
       </div>
     </div>
+
+    <div class="section">
+      <h3>📊 Statistiques personnalisées</h3>
+      <ul>
+        <li><strong>Poids actuel :</strong> {currentUser?.poids} kg</li>
+        <li><strong>IMC :</strong> {currentUser?.imc}</li>
+        <li><strong>Calories visées :</strong> {currentUser?.calories} kcal</li>
+        <li><strong>Protéines :</strong> {currentUser?.proteines} g</li>
+        <li><strong>Lipides :</strong> {currentUser?.lipides} g</li>
+        <li><strong>Glucides :</strong> {currentUser?.glucides} g</li>
+      </ul>
+    </div>
+    
   
     <div class="section">
       <h3>📉 Évolution du Poids</h3>

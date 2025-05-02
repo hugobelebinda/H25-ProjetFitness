@@ -3,6 +3,7 @@
   import { navigate } from "svelte-routing";
   import { Link } from "svelte-routing";
   import { login, user } from './common/auth';
+ 
 
   let email = "";
   let password = "";
@@ -24,14 +25,19 @@
       const response = await fetch("http://localhost:4201/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, motDePasse: password })
+                frequence: user.frequence,
+                body: JSON.stringify({ email, motDePasse: password})
       });
 
       const data = await response.json();
 
+      console.log(data)
+      console.log(response)
+
       if (response.ok) {
         localStorage.setItem("token", data.token);
         login(data.user, data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         alert("Connexion réussie !");
         navigate("/");
       } else {
@@ -42,60 +48,7 @@
       alert("Une erreur s'est produite.");
     }
   }
-  /*import { onMount } from "svelte";
-  import { navigate } from "svelte-routing";
-  import { Link } from "svelte-routing";
-  import { login, user } from './common/auth'; // ✅ Import du store
-
-  let email = "";
-  let password = "";
-
-  onMount(() => {
-      const unsubscribe = user.subscribe(u => {
-          if (u) {
-              navigate("/"); // Redirige si déjà connecté
-          }
-      });
-      return unsubscribe;
-  });
-
-  async function connecter() {
-      if (!email || !password) {
-          alert("Veuillez remplir tous les champs.");
-          return;
-      }
-
-      try {
-          const response = await fetch("http://localhost:4201/user/login", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, motDePasse: password })
-          });
-
-          const data = await response.json();
-
-          if (response.ok) {
-              alert("Connexion réussie ! Redirection en cours...");
-              console.log("User data:", data);
-
-              login(data.user); 
-              localStorage.setItem("token", data.token); 
-localStorage.setItem("userId", data.user._id);
-
-
-
-              setTimeout(() => {
-                  navigate("/");
-              }, 750);
-          } else {
-              alert("Erreur de connexion : " + (data.message || "Erreur inconnue"));
-          }
-
-      } catch (error) {
-          console.error("Erreur lors de la connexion :", error);
-          alert("Une erreur s'est produite. Veuillez réessayer.");
-      }
-  } */
+  
 </script>
 
   

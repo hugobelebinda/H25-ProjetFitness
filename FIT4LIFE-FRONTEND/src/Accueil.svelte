@@ -1,14 +1,14 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import Chatbot from "./lib/Chatbot.svelte"; 
-    import { user, logout } from './common/auth'; // ✅ Import du store
+    import { user, logout } from './common/auth'; 
 
     let currentUser;
-    $: currentUser = $user; // ✅ On réagit aux changements du store
+    $: currentUser = $user; 
 
     function handleLogout() {
-        logout(); // ✅ Réinitialise le store
-        navigate('/'); // Optionnel : redirige vers l'accueil
+        logout(); 
+        navigate('/'); 
     }
 </script>
 
@@ -268,10 +268,10 @@
 
         <div class="button-container" style="align-items: center;">
             {#if currentUser}
-                <!-- ✅ Message de bienvenue -->
+                <!--  Message de bienvenue -->
                 <p style="margin-right: 10px;"><strong> Bonjour {currentUser.nom || currentUser.username} !</strong></p>
 
-                <!-- ✅ Bouton de déconnexion -->
+                <!--  Bouton de déconnexion -->
                 <button class="button" on:click={handleLogout}><strong>Déconnexion</strong></button>
             {:else}
                 <Link to="/connexion">
@@ -293,8 +293,15 @@
             <h1><strong>Transforme ton corps, améliore ta vie</strong></h1>
             <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
             <Link to="/evaluation">
-                <button class="button">Commencez maintenant</button>
+                <button class="button">
+                    {#if currentUser}
+                        Réévaluer
+                    {:else}
+                        Commencez maintenant
+                    {/if}
+                </button>
             </Link>
+            
         </div>
     </section>
 
@@ -343,6 +350,7 @@
         </div>
     </section>
 
+    {#if !currentUser}
     <section class="inscriptionAcceuil">
         <h2>Prêt à transformer ta vie ?</h2>
         <p>Rejoins-nous dès maintenant et commence ton parcours fitness !</p>
@@ -350,5 +358,7 @@
             <button>S'inscrire</button>
         </Link>
     </section>
+{/if}
+
     <Chatbot />
 </div>

@@ -1,10 +1,13 @@
 <script>
+import { onMount } from "svelte";
+
   import { navigate } from "svelte-routing";
+  import { enregistrerRoutine } from "./services/routineService.js";
+  let groupesMusculaires = [];
+  let nomRoutine = "";
+  let exercices = [];
 
-let nomRoutine = "";
-let exercices = [];
-
-function ajouterExercice() {
+ function ajouterExercice() {
   exercices = [
     ...exercices,
     {
@@ -15,113 +18,39 @@ function ajouterExercice() {
   ];
 }
 
-function exercicesValides() {
-  return exercices.every(e => e.nom && e.series > 0 && e.repetitions > 0);
-}
-
-async function enregistrerRoutine() {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    alert("⚠️ Vous devez être connecté pour enregistrer un entraînement.");
-    return;
-  }
-
-  if (!nomRoutine || exercices.length === 0 || !exercicesValides()) {
-    alert("Veuillez remplir tous les champs requis.");
-    return;
-  }
-
-  const payload = {
-    nom: nomRoutine,
-    exercices
-  };
-
+onMount(async () => {
   try {
-    const res = await fetch("http://localhost:4201/user/entrainement", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
+    const res = await fetch("http://localhost:4201/user/exercices");
+    const data = await res.json();
+
+    const map = new Map();
+    data.data.forEach((ex) => {
+      if (!map.has(ex.groupeMusculaire)) {
+        map.set(ex.groupeMusculaire, []);
+      }
+      map.get(ex.groupeMusculaire).push(ex);
     });
 
-    if (res.ok) {
-      alert("✅ Entraînement enregistré !");
-      navigate("/tableau-de-bord");
-    } else {
-      const err = await res.json();
-      console.error("Erreur serveur :", err);
-      alert("❌ Erreur : " + (err.message || "Échec de l'enregistrement"));
-    }
-  } catch (e) {
-    console.error("Erreur réseau :", e);
-    alert("❌ Problème de connexion au serveur.");
+    groupesMusculaires = Array.from(map.entries()).map(([nom, exercices]) => ({
+      nom,
+      exercices
+    }));
+  } catch (error) {
+    console.error("Erreur lors du chargement des exercices :", error);
   }
-}
-    /*import { navigate } from "svelte-routing";
-  
-    let nomRoutine = "";
-    let exercices = [];
-  
-    function ajouterExercice() {
-      exercices = [
-        ...exercices,
-        {
-          nom: "",
-          series: 3,
-          repetitions: 10
-        }
-      ];
-    }
-  
-    function exercicesValides() {
-      return exercices.every(e => e.nom && e.series > 0 && e.repetitions > 0);
-    }
-  
-    async function enregistrerRoutine() {
-        
-        const userId = localStorage.getItem("userId");
+});
+ 
 
-if (userId == null) {
-  alert("⚠️ Vous devez être connecté pour enregistrer un entraînement.");
-  console.error("Tentative d'enregistrement sans userId");
-  return;
+
+
+
+ 
+async function enregistrer() {
+  await enregistrerRoutine(nomRoutine, exercices, true);
+  navigate("/plan-entrainement");
 }
-  
-      if (!userId || !nomRoutine || exercices.length === 0 || !exercicesValides()) {
-        alert("Veuillez remplir tous les champs requis.");
-        return;
-      }
-  
-      const payload = {
-        userId,
-        nom: nomRoutine,
-        exercices
-      };
-  
-      try {
-        const res = await fetch("http://localhost:4201/user/entrainement", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-  
-        if (res.ok) {
-          const data = await res.json();
-          alert("✅ Entraînement enregistré !");
-          navigate("/tableau-de-bord");
-        } else {
-          const err = await res.json();
-          console.error("Erreur serveur :", err);
-          alert("❌ Erreur : " + (err.message || "Échec de l'enregistrement"));
-        }
-      } catch (e) {
-        console.error("Erreur réseau :", e);
-        alert("❌ Problème de connexion au serveur.");
-      }
-    } */
+
+   
   </script>
   
   
@@ -214,39 +143,143 @@ if (userId == null) {
       background: white;
       color: red;
     }
+  
+    .custom-dropdown {
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+  
+    .custom-dropdown details {
+      margin-bottom: 10px;
+    }
+  
+    .custom-dropdown summary {
+      cursor: pointer;
+      color: #18a888;
+      font-weight: bold;
+    }
+  
+    .custom-dropdown details > .contenu {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 5px;
+      padding-left: 10px;
+    }
+  
+    .exercice-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+  
+    .exercice-btn:hover {
+      background: #333;
+    }
+  
+    .selected-label {
+      color: #ffffff;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
   </style>
+  
   
   <div class="container">
     <h2>Créer une routine</h2>
   
     <label>Nom de la routine</label>
-    <input type="text" bind:value={nomRoutine} placeholder="Routine du haut du corps" />
+    <input
+      type="text"
+      bind:value={nomRoutine}
+      placeholder="Routine du haut du corps" />
   
-    <button class="btn" on:click={ajouterExercice}>+ Ajouter un exercice</button>
+    <button class="btn" on:click={ajouterExercice}>
+      + Ajouter un exercice
+    </button>
   
     {#each exercices as ex, index}
       <div class="exercice">
         <h3>Exercice {index + 1}</h3>
         <div class="input-row">
+  
+          <!-- Sélection du nom d'exercice -->
           <div>
             <label>Nom</label>
-            <input type="text" bind:value={ex.nom} placeholder="Ex: Développé couché" />
+            {#if !ex.nom}
+              <div class="custom-dropdown">
+                {#each groupesMusculaires as groupe}
+                  <details>
+                    <summary>{groupe.nom}</summary>
+                    <div class="contenu">
+                      {#each groupe.exercices as opt}
+                        <button
+                          type="button"
+                          class="exercice-btn"
+                          on:click={(e) => {
+                            exercices[index].nom = opt.nom;
+                            exercices = [...exercices];
+                            e.currentTarget
+                              .closest("details")
+                              ?.removeAttribute("open");
+                          }}
+                        >
+                          {opt.nom}
+                        </button>
+                      {/each}
+                    </div>
+                  </details>
+                {/each}
+              </div>
+            {:else}
+              <p class="selected-label">
+                 {ex.nom}
+              </p>
+            {/if}
           </div>
+  
+          <!-- Séries -->
           <div>
             <label>Séries</label>
-            <input type="number" bind:value={ex.series} min="1" />
+            <input
+              type="number"
+              bind:value={ex.series}
+              min="1" />
           </div>
+  
+          <!-- Répétitions -->
           <div>
             <label>Répétitions</label>
-            <input type="number" bind:value={ex.repetitions} min="1" />
+            <input
+              type="number"
+              bind:value={ex.repetitions}
+              min="1" />
           </div>
+  
         </div>
       </div>
     {/each}
   
+    <!-- Boutons Enregistrer / Annuler -->
     <div class="footer-buttons">
-      <button class="btn" on:click={enregistrerRoutine}>Enregistrer</button>
-      <button class="btn cancel-btn" on:click={() => navigate("/tableau-de-bord")}>Annuler</button>
+      <button class="btn" on:click={enregistrer}>
+        Enregistrer
+      </button>
+      <button
+        class="btn cancel-btn"
+        on:click={() => navigate("/tableau-de-bord")}
+      >
+        Annuler
+      </button>
     </div>
   </div>
   
