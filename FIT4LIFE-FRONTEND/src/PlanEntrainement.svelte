@@ -7,7 +7,6 @@ import { Link, navigate } from 'svelte-routing';
   let loading = false;
   let entrainements = [];
   let isConnected = false;
-  let suiviEnCours = null;
   let entrainementSelectionne = null;
   let poidsUnit = "kg"; // ou "lbs"
   let suiviDate = new Date().toISOString().split("T")[0]; 
@@ -109,7 +108,7 @@ function ouvrirFormulaire(entrainementId, titre, contenu) {
     titre,
     contenu: contenu.split("\n").map(line => {
       const [nomPartiel, desc] = line.split(" : ");
-      const [seriesCount, repsCount] = desc.match(/\d+/g);
+      const [seriesCount] = desc.match(/\d+/g);
       return {
         nom: nomPartiel.replace("- ", "").trim(),
         series: Array.from({ length: parseInt(seriesCount) }, () => ({ charge: '', repetitions: '' }))
