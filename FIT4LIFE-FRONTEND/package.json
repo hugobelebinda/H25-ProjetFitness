@@ -28,6 +28,7 @@
     "node-fetch": "^2.7.0",
     "nodemon": "^3.1.9",
     "sirv-cli": "^2.0.0",
+    "svelte-calendar": "^3.1.6",
     "svelte-routing": "^2.13.0"
   }
 }

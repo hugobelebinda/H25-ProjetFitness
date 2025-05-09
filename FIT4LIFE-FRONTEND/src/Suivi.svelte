@@ -108,11 +108,6 @@
     </div>
   
     <div class="section">
-      <h3>📉 Évolution du Poids</h3>
-      <div class="placeholder-graph">Graphique en cours...</div>
-    </div>
-  
-    <div class="section">
       <h3>🏋️ Historique des entraînements</h3>
       <ul>
         <li>✅ Lundi - Full Body</li>
