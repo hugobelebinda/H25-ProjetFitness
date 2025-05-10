@@ -22,7 +22,7 @@
 
             const data = await res.json();
 
-            console.log("📩 Réponse reçue dans Svelte :", data);
+            console.log("Réponse reçue dans Svelte :", data);
             messages = [...messages, { sender: "bot", text: data.answer }];
         } catch (error) {
             console.error("Erreur:", error);

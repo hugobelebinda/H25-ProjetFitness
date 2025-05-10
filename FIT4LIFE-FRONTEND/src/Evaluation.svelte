@@ -28,7 +28,7 @@ import { user } from "./common/auth";
     const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
     const objectifs = ["Perdre du poids", "Gagner du muscle", "Garder la forme", "Améliorer mon endurance"];
     const experiences = ["Débutant", "Intermédiaire", "Avancé"];
-    const entrainements = ["Push Pull Legs", "Full Body", "Split classique", "Entraînement fonctionnel", "Full cardio (HIIT et cardio)", "CrossFit"];
+    const entrainements = ["Push Pull Legs", "Full Body", "Split d'un muscle par jour", "Arnold Split", "Fullbody", "Arnold X PushPullLeg"];
     const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
     const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
     const niveauxActivite = [

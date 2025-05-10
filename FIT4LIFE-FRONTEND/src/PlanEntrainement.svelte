@@ -1,19 +1,20 @@
 <script>
-import { Link, navigate } from 'svelte-routing';
+  import { Link, navigate } from 'svelte-routing';
   import { marked } from "marked";
   import { onMount } from "svelte";
-  import { logout } from "./common/auth";
+  import { logout, user } from "./common/auth";
+
   let planIA = "";
   let loading = false;
   let entrainements = [];
   let isConnected = false;
   let entrainementSelectionne = null;
-  let poidsUnit = "kg"; // ou "lbs"
-  let suiviDate = new Date().toISOString().split("T")[0]; 
-
+  let poidsUnit = "kg";
+  let suiviDate = new Date().toISOString().split("T")[0];
+  let currentUser = $user;
 
   function renderMarkdown(text) {
-    return marked.parse(text); 
+    return marked.parse(text);
   }
 
   onMount(() => {
@@ -25,141 +26,185 @@ import { Link, navigate } from 'svelte-routing';
       navigate("/connexion");
       return;
     }
+    chargerEntrainements();
 
     fetch("http://localhost:4201/user/entrainement", {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(res => res.json())
-      .then(data => {
-        entrainements = data.map((e, index) => ({
-          id: e._id || index,
-          titre: e.nom,
-          contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
-        }));
-      })
-      .catch(err => {
-        console.error("Erreur réseau :", err);
-      });
+    .then(res => res.json())
+    .then(data => {
+      entrainements = data.map((e, index) => ({
+        id: e._id || index,
+        titre: e.nom,
+        contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions === -1 ? 'AMRAP' : ex.repetitions} reps`).join("\n")
+      }));
+    })
+    .catch(err => {
+      console.error("Erreur réseau :", err);
+    });
   });
 
   async function genererAvecIA() {
     loading = true;
-    planIA = "";
+    const token = localStorage.getItem("token");
 
     try {
-      const payload = {
-        objectif: "Perdre du poids",
-        experience: "Débutant",
-        type: "Full Body"
-      };
-
-      const res = await fetch("http://localhost:3001/api/generer-entrainement", {
+      const res = await fetch("http://localhost:4201/user/generer-entrainement", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({})
       });
 
       const data = await res.json();
-      planIA = data.answer || "Une erreur est survenue.";
+      console.log("Réponse IA brute :", data);
 
-      entrainements = [
-        ...entrainements,
-        { id: Date.now(), titre: "Plan IA", contenu: planIA }
-      ];
-    } catch (error) {
-      console.error("Erreur:", error);
-      planIA = "Erreur lors de la génération du plan.";
+      if (!res.ok || !Array.isArray(data.entrainements)) {
+        throw new Error("Format de données IA invalide");
+      }
+
+      for (const plan of data.entrainements) {
+        if (!plan.exercices || plan.exercices.length === 0) continue; // ignore vide
+        const saveRes = await fetch("http://localhost:4201/user/entrainement", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            nom: plan.nom,
+            exercices: plan.exercices
+          })
+        });
+
+        if (!saveRes.ok) {
+          console.error(`Erreur lors de l’enregistrement de "${plan.nom}"`);
+        }
+      }
+      await chargerEntrainements();
+      navigate("/plan-entrainement");
+    } catch (err) {
+      console.error("Erreur IA :", err);
+      alert("Erreur lors de la génération ou l'enregistrement.");
     } finally {
       loading = false;
     }
   }
 
   async function supprimerEntrainement(id) {
-  const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cet entraînement ?");
+    const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cet entraînement ?");
+    if (!confirmation) return;
 
-  if (!confirmation) return;
+    const token = localStorage.getItem("token");
 
+    try {
+      const res = await fetch(`http://localhost:4201/user/entrainement/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) throw new Error("Échec de la suppression");
+
+      entrainements = entrainements.filter(e => e.id !== id);
+    } catch (err) {
+      console.error(err);
+      alert("Une erreur est survenue pendant la suppression.");
+    }
+  }
+
+  function modifierEntrainement(entrainement) {
+    localStorage.setItem("routine_a_modifier", JSON.stringify({
+      id: entrainement.id,
+      titre: entrainement.titre,
+      contenu: entrainement.contenu
+    }));
+    navigate("/ajout-exercice");
+  }
+
+  function ouvrirFormulaire(entrainementId, titre, contenu) {
+    entrainementSelectionne = {
+      id: entrainementId,
+      titre,
+      contenu: contenu.split("\n").map(line => {
+        const [nomPartiel, desc] = line.split(" : ");
+        const [seriesCount] = desc.match(/\d+/g);
+        return {
+          nom: nomPartiel.replace("- ", "").trim(),
+          series: Array.from({ length: parseInt(seriesCount) }, () => ({ charge: '', repetitions: '' }))
+        };
+      })
+    };
+  }
+  async function chargerEntrainements() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch(`http://localhost:4201/user/entrainement/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
+    const res = await fetch("http://localhost:4201/user/entrainement", {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
-    if (!res.ok) throw new Error("Échec de la suppression");
-
-  
-    entrainements = entrainements.filter(e => e.id !== id);
+    const data = await res.json();
+    entrainements = data.map((e, index) => ({
+      id: e._id || index,
+      titre: e.nom,
+      contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
+    }));
   } catch (err) {
-    console.error(err);
-    alert("Une erreur est survenue pendant la suppression.");
+    console.error("Erreur lors du chargement :", err);
   }
 }
 
-function ouvrirFormulaire(entrainementId, titre, contenu) {
-  entrainementSelectionne = {
-    id: entrainementId,
-    titre,
-    contenu: contenu.split("\n").map(line => {
-      const [nomPartiel, desc] = line.split(" : ");
-      const [seriesCount] = desc.match(/\d+/g);
-      return {
-        nom: nomPartiel.replace("- ", "").trim(),
-        series: Array.from({ length: parseInt(seriesCount) }, () => ({ charge: '', repetitions: '' }))
-      };
-    })
-  };
-}
 
-async function envoyerSuivi() {
-  const token = localStorage.getItem("token");
+  async function envoyerSuivi() {
+    const token = localStorage.getItem("token");
 
-  const body = {
-    entrainementId: entrainementSelectionne.id,
-    date: suiviDate,
-        exercices: entrainementSelectionne.contenu.map(exo => ({
-      nom: exo.nom,
-      series: exo.series.map(s => ({
-        charge: parseFloat(s.charge),
-        repetitions: parseInt(s.repetitions),
-        unite: poidsUnit
+    const body = {
+      entrainementId: entrainementSelectionne.id,
+      date: suiviDate,
+      exercices: entrainementSelectionne.contenu.map(exo => ({
+        nom: exo.nom,
+        series: exo.series.map(s => ({
+          charge: parseFloat(s.charge),
+          repetitions: parseInt(s.repetitions),
+          unite: poidsUnit
+        }))
       }))
-    }))
-  };
+    };
 
-  try {
-    const res = await fetch("http://localhost:4201/user/suivi", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
+    try {
+      const res = await fetch("http://localhost:4201/user/suivi", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      });
 
-    if (!res.ok) throw new Error("Erreur serveur");
+      if (!res.ok) throw new Error("Erreur serveur");
 
-    alert("Suivi enregistré ✅");
-    entrainementSelectionne = null;
-  } catch (err) {
-    console.error(err);
-    alert("Erreur lors de l’enregistrement du suivi");
+      alert("Suivi enregistré ");
+      entrainementSelectionne = null;
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l’enregistrement du suivi");
+    }
   }
-}
-
 
   function seDeconnecter() {
     logout();
     navigate("/connexion");
   }
-  
 </script>
+
+
 
 
 <style>
@@ -248,7 +293,7 @@ async function envoyerSuivi() {
       {#if loading}
         Génération en cours...
       {:else}
-        Générer avec l'IA
+        Générer votre programme  {currentUser?.entrainement} avec l'IA 
       {/if}
     </button>
 
@@ -273,21 +318,35 @@ async function envoyerSuivi() {
       <p>Aucun entraînement pour le moment.</p>
     {:else}
     {#each entrainements as entrainement (entrainement.id)}
-    <div class="plan-item">
-      <h3>{entrainement.titre}</h3>
-      {@html renderMarkdown(entrainement.contenu)}
-      
-      <!-- Bouton supprimer -->
-      <button on:click={() => supprimerEntrainement(entrainement.id)} style="background: #cc0000; margin-top: 10px;">
-        Supprimer
-      </button>
-  
-      <!-- Bouton suivi -->
-      <button on:click={() => ouvrirFormulaire(entrainement.id, entrainement.titre, entrainement.contenu)} style="margin-top: 10px;">
-        Je viens de faire cet entraînement
-      </button>
-    </div>
-  {/each}
+  <div class="plan-item">
+    <h3>{entrainement.titre}</h3>
+    {@html renderMarkdown(entrainement.contenu)}
+
+    <!-- Boutons actions -->
+    <button
+  on:click={() => modifierEntrainement(entrainement)}
+  style="margin-top: 10px; background: orange;"
+>
+  Modifier
+</button>
+
+
+    <button
+      on:click={() => supprimerEntrainement(entrainement.id)}
+      style="background: #cc0000; margin-top: 10px;"
+    >
+      Supprimer
+    </button>
+
+    <button
+      on:click={() => ouvrirFormulaire(entrainement.id, entrainement.titre, entrainement.contenu)}
+      style="margin-top: 10px;"
+    >
+      Je viens de faire cet entraînement
+    </button>
+  </div>
+{/each}
+
 
   {#if entrainementSelectionne}
   <div class="plan-item" style="margin-top: 30px;">
