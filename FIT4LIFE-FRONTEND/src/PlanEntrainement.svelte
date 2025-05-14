@@ -68,7 +68,7 @@
       }
 
       for (const plan of data.entrainements) {
-        if (!plan.exercices || plan.exercices.length === 0) continue; // ignore vide
+        if (!plan.exercices || plan.exercices.length === 0) continue; 
         const saveRes = await fetch("http://localhost:4201/user/entrainement", {
           method: "POST",
           headers: {
@@ -208,6 +208,14 @@
 
 
 <style>
+
+.page-container {
+  background-color: #181818;
+  color: white;
+  min-height: 100vh;
+  padding: 40px;
+}
+
   .container {
     display: flex;
     height: 100%;
@@ -275,8 +283,8 @@
 }
 
 </style>
-
-<div class="container">
+<div class="page-container">
+  <div class="container">
   <!-- Colonne gauche -->
   <div class="sidebar">
     <Link to=" " class="retour">← Retour</Link>
@@ -360,7 +368,7 @@
     <label>Unité :
       <select bind:value={poidsUnit}>
         <option value="kg">kg</option>
-        <option value="lbs">lbs</option>
+        <!--<option value="lbs">lbs</option>-->
       </select>
     </label>
 
@@ -413,6 +421,7 @@
   {/if} 
 </div>
 </div> 
+</div>
 
 
  

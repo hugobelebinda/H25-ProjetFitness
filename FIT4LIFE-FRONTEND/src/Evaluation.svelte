@@ -111,15 +111,15 @@ import { user } from "./common/auth";
   }
 
   $: poidsObjectifOptions = poids.filter(p => {
-    const poidsActuelKg = parseInt(poidsActuel); // "80 kg" → 80
-    const pKg = parseInt(p); // "65 kg" → 65
+    const poidsActuelKg = parseInt(poidsActuel); 
+    const pKg = parseInt(p); 
 
     if (objectif === "Perdre du poids") {
         return pKg < poidsActuelKg;
     } else if (objectif === "Gagner du muscle") {
         return pKg > poidsActuelKg;
     } else {
-        return true; // Aucun filtre pour les autres objectifs
+        return true; 
     }
 });
 
