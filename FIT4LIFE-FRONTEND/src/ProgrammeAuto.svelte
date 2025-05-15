@@ -13,13 +13,27 @@
           nom: "Développé couché",
           image: "https://via.placeholder.com/64",
           description: "Exercice pour les pectoraux avec barre.",
-          series: 4,
+          series: 2,
+          repetitions: 6
+        },
+        {
+          nom: "Développé militaire",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des épaules.",
+          series: 2,
           repetitions: 8
         },
         {
           nom: "Développé incliné haltères",
           image: "https://via.placeholder.com/64",
           description: "Variante inclinée pour le haut des pectoraux.",
+          series: 3,
+          repetitions: 8
+        },
+        {
+          nom: "Poussée des triceps au-dessus de la tête",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des épaules latérales.",
           series: 3,
           repetitions: 10
         },
@@ -28,14 +42,14 @@
           image: "https://via.placeholder.com/64",
           description: "Travail des épaules latérales.",
           series: 3,
-          repetitions: 15
+          repetitions: 12
         },
         {
-          nom: "Dips",
+          nom: "Chest flys",
           image: "https://via.placeholder.com/64",
-          description: "Travail triceps et poitrine.",
-          series: 3,
-          repetitions: 12
+          description: "Travail de la poitrine en isolation.",
+          series: 2,
+          repetitions: 10
         }
       ],
       Pull: [
@@ -43,29 +57,43 @@
           nom: "Tractions",
           image: "https://via.placeholder.com/64",
           description: "Renforce le dos et les biceps.",
-          series: 4,
+          series: 3,
+          repetitions: 8
+        },
+        {
+          nom: "Lat pulldown",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour le grand dorsal.",
+          series: 3,
+          repetitions: 8
+        },
+        {
+          nom: "Rowing barre T",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour le dos.",
+          series: 3,
+          repetitions: 8
+        },
+        {
+          nom: "Curl biceps hammer",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des biceps et des brachioradials .",
+          series: 2,
           repetitions: 10
         },
         {
-          nom: "Rowing barre",
-          image: "https://via.placeholder.com/64",
-          description: "Exercice horizontal pour le dos.",
-          series: 4,
-          repetitions: 12
-        },
-        {
-          nom: "Curl biceps haltères",
+          nom: "Preacher curls",
           image: "https://via.placeholder.com/64",
           description: "Travail des biceps.",
-          series: 3,
-          repetitions: 12
+          series: 2,
+          repetitions: 10
         },
         {
           nom: "Face Pull",
           image: "https://via.placeholder.com/64",
           description: "Travail deltoïdes postérieurs et trapèzes.",
           series: 3,
-          repetitions: 15
+          repetitions: 12
         }
       ],
       Legs: [
@@ -77,16 +105,9 @@
           repetitions: 8
         },
         {
-          nom: "Presse à jambes",
+          nom: "Fentes bulgares",
           image: "https://via.placeholder.com/64",
           description: "Travail les quadriceps et fessiers.",
-          series: 3,
-          repetitions: 12
-        },
-        {
-          nom: "Fentes marchées",
-          image: "https://via.placeholder.com/64",
-          description: "Fentes dynamiques pour jambes et équilibre.",
           series: 3,
           repetitions: 12
         },
@@ -96,134 +117,195 @@
           description: "Ischios-jambiers en isolation.",
           series: 3,
           repetitions: 15
+        },
+        {
+          nom: "Leg extension",
+          image: "https://via.placeholder.com/64",
+          description: "Quadriceps en isolation.",
+          series: 3,
+          repetitions: 15
         }
       ]
     },
     "Upper Lower": {
       Upper: [
         {
-          nom: "Développé militaire",
-          image: "https://via.placeholder.com/64",
-          description: "Travail des épaules.",
-          series: 4,
-          repetitions: 10
-        },
-        {
           nom: "Développé couché",
           image: "https://via.placeholder.com/64",
           description: "Pectoraux avec barre.",
+          series: 3,
+          repetitions: 8
+        },
+        {
+          nom: "Développé militaire",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des épaules.",
+          series: 2,
+          repetitions: 8
+        },
+        {
+          nom: "Dips",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour les triceos et la poitrine.",
+          series: 2,
+          repetitions: 8
+        },
+        {
+          nom: "Tractions",
+          image: "https://via.placeholder.com/64",
+          description: "Renforce le dos et les biceps.",
+          series: 3,
+          repetitions: 8
+        },
+
+         {
+          nom: "Lat pulldown",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour le grand dorsal.",
+          series: 2,
+          repetitions: 8
+        },
+        {
+          nom: "Rowing barre T",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour le dos.",
+          series: 2,
+          repetitions: 8
+        },
+        
+      ],
+      Lower: [
+        {
+          nom: "Squat",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice de base pour les jambes.",
           series: 4,
           repetitions: 8
         },
         {
-          nom: "Tractions pronation",
+          nom: "Fentes bulgares",
           image: "https://via.placeholder.com/64",
-          description: "Dos et biceps.",
-          series: 3,
-          repetitions: 10
-        }
-      ],
-      Lower: [
-        {
-          nom: "Soulevé de terre jambes tendues",
-          image: "https://via.placeholder.com/64",
-          description: "Travail des ischios.",
-          series: 4,
-          repetitions: 10
-        },
-        {
-          nom: "Squat gobelet",
-          image: "https://via.placeholder.com/64",
-          description: "Travail quadriceps.",
+          description: "Travail les quadriceps et fessiers.",
           series: 3,
           repetitions: 12
         },
         {
-          nom: "Fentes statiques",
+          nom: "Leg Curl",
           image: "https://via.placeholder.com/64",
-          description: "Exercice de stabilité et de jambes.",
+          description: "Ischios-jambiers en isolation.",
           series: 3,
-          repetitions: 10
+          repetitions: 15
+        },
+        {
+          nom: "Leg extension",
+          image: "https://via.placeholder.com/64",
+          description: "Quadriceps en isolation.",
+          series: 3,
+          repetitions: 15
         }
       ]
     },
     "Arnold Split": {
-      Poitrine: [
-        {
-          nom: "Développé couché haltères",
+      "Poitrine Et Dos": [
+       {
+          nom: "Développé couché",
           image: "https://via.placeholder.com/64",
-          description: "Travail complet de la poitrine.",
-          series: 4,
-          repetitions: 10
+          description: "Exercice pour les pectoraux avec barre.",
+          series: 2,
+          repetitions: 6
         },
         {
-          nom: "Pompes",
+          nom: "Développé incliné haltères",
           image: "https://via.placeholder.com/64",
-          description: "Poitrine au poids du corps.",
-          series: 4,
-          repetitions: 20
-        }
-      ],
-      Dos: [
-        {
-          nom: "Tractions pronation",
-          image: "https://via.placeholder.com/64",
-          description: "Dos et biceps.",
-          series: 4,
-          repetitions: 10
-        },
-        {
-          nom: "Rowing unilatéral",
-          image: "https://via.placeholder.com/64",
-          description: "Travail en profondeur du dos.",
-          series: 4,
-          repetitions: 12
-        }
-      ],
-      Jambes: [
-        {
-          nom: "Squat barre",
-          image: "https://via.placeholder.com/64",
-          description: "Exercice complet pour les jambes.",
-          series: 5,
+          description: "Variante inclinée pour le haut des pectoraux.",
+          series: 3,
           repetitions: 8
         },
         {
-          nom: "Mollets debout",
+          nom: "Tractions",
           image: "https://via.placeholder.com/64",
-          description: "Travail des mollets.",
-          series: 4,
-          repetitions: 15
-        }
+          description: "Renforce le dos et les biceps.",
+          series: 3,
+          repetitions: 8
+        },
+       {
+          nom: "Rowing barre T",
+          image: "https://via.placeholder.com/64",
+          description: "Exercice horizontal pour le dos.",
+          series: 3,
+          repetitions: 8
+        },
       ],
-      Épaules: [
+      Jambes: [
         {
-          nom: "Développé militaire",
+            nom: "Squat",
           image: "https://via.placeholder.com/64",
-          description: "Travail des épaules.",
+          description: "Exercice de base pour les jambes.",
           series: 4,
-          repetitions: 10
+          repetitions: 8
         },
         {
-          nom: "Élévations latérales",
+          nom: "Fentes bulgares",
           image: "https://via.placeholder.com/64",
-          description: "Isolation de l'épaule moyenne.",
+          description: "Travail les quadriceps et fessiers.",
+          series: 3,
+          repetitions: 12
+        },
+        {
+          nom: "Leg Curl",
+          image: "https://via.placeholder.com/64",
+          description: "Ischios-jambiers en isolation.",
+          series: 3,
+          repetitions: 15
+        },
+        {
+          nom: "Leg extension",
+          image: "https://via.placeholder.com/64",
+          description: "Quadriceps en isolation.",
           series: 3,
           repetitions: 15
         }
       ],
       Bras: [
         {
-          nom: "Curl barre EZ",
+          nom: "Élévations latérales",
           image: "https://via.placeholder.com/64",
-          description: "Biceps massifs.",
+          description: "Travail des épaules latérales.",
           series: 3,
           repetitions: 12
         },
         {
-          nom: "Extension triceps corde",
+          nom: "Face Pull",
           image: "https://via.placeholder.com/64",
-          description: "Travail des triceps.",
+          description: "Travail deltoïdes postérieurs et trapèzes.",
+          series: 3,
+          repetitions: 12
+        },
+       {
+          nom: "Poussée des triceps au-dessus de la tête",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des épaules latérales.",
+          series: 3,
+          repetitions: 10
+        },
+        {
+          nom: "Curl biceps hammer",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des biceps et des brachioradials .",
+          series: 2,
+          repetitions: 10
+        },
+        {
+          nom: "Preacher curls",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des biceps.",
+          series: 2,
+          repetitions: 10
+        },
+        {
+          nom: "Flexion avant-bras poulie",
+          image: "https://via.placeholder.com/64",
+          description: "Travail des avants-bras.",
           series: 3,
           repetitions: 12
         }

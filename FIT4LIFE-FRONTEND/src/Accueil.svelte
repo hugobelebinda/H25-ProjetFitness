@@ -9,7 +9,10 @@
     function handleLogout() {
         logout(); 
         navigate('/'); 
+         
     }
+
+
 </script>
 
 <style>
@@ -242,24 +245,107 @@
         color: #18a888;
     }
 
+    .nav-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.nav-button.locked {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  background: #111;
+  border: 2px solid #555;
+  color: #777;
+  font-size: 1rem;
+  border-radius: 10px;
+  cursor: not-allowed;
+  opacity: 0.7; /* Pour garder un fond foncé bien net */
+}
+
+.lock-msg {
+  display: block;
+  color: #ff4c4c; /* 🔴 rouge visible */
+  font-size: 0.75rem;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.locked-btn {
+  display: inline-block;
+  background: #222;
+  color: #777;
+  border: 2px solid #444;
+  padding: 12px 24px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  text-align: center;
+  pointer-events: none; /* 🧠 Désactive tous les clics */
+  user-select: none;
+}.locked-btn {
+  display: inline-block;
+  background: #222;
+  color: #777;
+  border: 2px solid #444;
+  padding: 12px 24px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  text-align: center;
+  pointer-events: none; /* 🧠 Désactive tous les clics */
+  user-select: none;
+}
+
+.lock-msg {
+  display: block;
+  color: #ff4c4c;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.lock-msg {
+  display: block;
+  color: #ff4c4c;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
     
 </style>
 
 
 <div class="sidebar">
-    <h2>
-      FIT4LIFE 
-      <img src="/logo.png" alt="Logo" />
-    </h2>
-  
-    <nav class="sidebar-nav">
-      <Link to="/plan-entrainement" class="nav-button">📋 Plan d'entraînement</Link>
-      <Link to="/plan-nutritionnel" class="nav-button">🥗 Plan nutritionnel</Link>
-      <Link to="/tableau-de-bord" class="nav-button">📊 Tableau de bord</Link>
-      <Link to="/suivi" class="nav-button">📈 Suivi</Link>
-      <Link to="/en-savoir-plus" class="nav-button">ℹ️ En savoir plus</Link>
-    </nav>
-  </div>
+  <h2>
+    FIT4LIFE 
+    <img src="/logo.png" alt="Logo" />
+  </h2>
+
+  <nav class="sidebar-nav">
+    {#each [
+      { label: "📋 Plan d'entraînement", to: "/plan-entrainement" },
+      { label: "🥗 Plan nutritionnel", to: "/plan-nutritionnel" },
+      { label: "📊 Tableau de bord", to: "/tableau-de-bord" },
+      { label: "📈 Suivi", to: "/suivi" },
+      { label: "ℹ️ En savoir plus", to: "/en-savoir-plus" },
+    ] as item}
+    
+    <div class="nav-wrapper">
+      {#if $user && $user.frequence}
+        <Link to={item.to} class="nav-button">{item.label}</Link>
+      {:else}
+        <div class="nav-button locked">
+          {item.label}
+          <span class="lock-msg">{!$user ? "Veuillez vous connecter" : "Veuillez compléter l’évaluation"}</span>
+        </div>
+      {/if}
+    </div>
+
+    {/each}
+  </nav>
+</div>
+
   
 
 <div class="content">
@@ -292,16 +378,23 @@
         <div class="vidbackground-content">
             <h1><strong>Transforme ton corps, améliore ta vie</strong></h1>
             <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
-            <Link to="/evaluation">
-                <button class="button">
-                    {#if currentUser}
-                        Réévaluer
-                    {:else}
-                        Commencez maintenant
-                    {/if}
-                </button>
-            </Link>
-            
+            {#if currentUser}
+  <Link to="/evaluation">
+    <button class="button">
+      {#if currentUser.frequence || currentUser.objectif || currentUser.entrainement}
+        Réévaluer
+      {:else}
+        Évaluer
+      {/if}
+    </button>
+  </Link>
+{:else}
+  <div class="locked-btn">
+    Commencez maintenant
+    <span class="lock-msg">Veuillez vous connecter</span>
+  </div>
+{/if}
+
         </div>
     </section>
 

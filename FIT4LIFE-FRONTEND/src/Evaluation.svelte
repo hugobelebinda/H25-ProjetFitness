@@ -2,7 +2,7 @@
 
     import { navigate } from "svelte-routing";
     import { get } from "svelte/store";
-import { user } from "./common/auth"; 
+    import { user } from "./common/auth"; 
 
     // Sélections par défaut
     let objectif = "Perdre du poids";
@@ -47,7 +47,7 @@ import { user } from "./common/auth";
     }
 
     async function soumettreEvaluation() {
-        //alert("Fonction appelée !");
+       
     const currentUser = get(user);
     
 
@@ -96,7 +96,6 @@ import { user } from "./common/auth";
   console.log("Calories recommandées :", data.calories); 
   console.log("Utilisateur mis à jour :", data.user);    
   user.set(data.user); 
-
         navigate("/tableau-de-bord");
       } else {
         const data = await res.json();
