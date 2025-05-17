@@ -1,6 +1,7 @@
 <script>
   import { Link } from "svelte-routing";
   import { onMount } from 'svelte';
+  import { user } from './common/auth'; // store utilisateur
 
   let suivis = [];
   let loading = true;
@@ -13,7 +14,6 @@
       const res = await fetch("http://localhost:4201/user/suivi", {
         headers: { Authorization: `Bearer ${token}` }
       });
-
       const data = await res.json();
       suivis = data;
     } catch (err) {
@@ -26,6 +26,32 @@
   function formatDate(dateStr) {
     const d = new Date(dateStr);
     return d.toLocaleDateString();
+  }
+
+  async function supprimerPoids(id) {
+    const confirmation = confirm("Supprimer cette entrée de poids ?");
+    if (!confirmation) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`http://localhost:4201/user/poids-historique/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error("Erreur lors de la suppression");
+
+      const data = await res.json();
+user.set(data.user); 
+
+
+      alert("Poids supprimé !");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur pendant la suppression du poids.");
+    }
   }
 
   async function supprimerSuivi(id) {
@@ -53,24 +79,11 @@
   }
 </script>
 
+
 <style>
-  :global(html, body) {
-  background-color: #0e0e0e;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  color: white;
-}
-
-.dashboard-container {
-  background-color: #0e0e0e;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-h1 {
-  color: #18e0a8;
+  /* Titre principal */
+.dashboard-container h1 {
+  color: #fff !important;
   font-size: 2em;
   display: flex;
   justify-content: center;
@@ -78,37 +91,44 @@ h1 {
   gap: 10px;
 }
 
-.add-button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  background: #18e0a8;
-  border: none;
-  color: black;
-  font-size: 1.1em;
-  font-weight: bold;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.add-button:hover {
-  background: white;
-  color: #18e0a8;
-}
-
-.journal-container {
-  padding: 40px 20px;
-  background-color: #0e0e0e;
-}
-
-.journal-container h2 {
-  color: #18e0a8;
+/* Sous-titres des colonnes */
+.journal-column h2 {
+  color: #fff !important;
   font-size: 1.5em;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
+ .dashboard-container {
+  background-color: #0e0e0e;
+  padding: 40px 20px 20px 20px;
+  text-align: center;
+}
+
+.journal-container {
+  background-color: #0e0e0e;
+  padding: 0 20px 40px 20px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.columns {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.journal-column {
+  flex: 1;
+  min-width: 340px;
+  max-width: 600px;
+}
+
 
 .journal-card {
   background-color: #1a1a1a;
@@ -157,63 +177,59 @@ p {
   color: #ccc;
 }
 
+
+
 </style>
 
-
 <div class="dashboard-container">
-  <h1>📊 Tableau de Bord</h1>
-
-  <!-- <div class="grid">
-    <div class="card">
-      <h3>⚖️ Statistiques principales</h3>
-      <p>Poids, objectifs, progrès récents</p>
-    </div>
-
-    <div class="card">
-      <h3>📅 Calendrier des entraînements</h3>
-      <p>Vue hebdomadaire des séances planifiées</p>
-    </div>
-
-    <div class="card">
-      <h3>🍽️ Suivi des repas</h3>
-      <p>Calories consommées vs objectif</p>
-    </div>
-
-    <div class="card">
-      <h3>📈 Progression des performances</h3>
-      <p>Graphique dynamique en cours</p>
-    </div>
-  </div> -->
-
+  <h1>📊 Journal de Bord</h1>
   <Link to="/">
     <button class="add-button">🏠 Retour à l'accueil</button>
   </Link>
 </div>
 
 <div class="journal-container">
-  {#if loading}
-    <p>⏳ Chargement en cours...</p>
-  {:else if suivis.length > 0}
-    <h2>📓 Journal des entraînements</h2>
-
-    {#each suivis as suivi}
-      <div class="journal-card">
-        <button class="delete-button" on:click={() => supprimerSuivi(suivi._id)}>🗑️</button>
-        <strong>{formatDate(suivi.date)}</strong>
-
-        {#each suivi.exercices as exo}
-          <div style="margin-top: 5px;">
-            <em>{exo.nom}</em>
-            <ul>
-              {#each exo.series as s, i}
-                <li>Série {i + 1} : {s.charge} {s.unite} × {s.repetitions} reps</li>
-              {/each}
-            </ul>
+  <div class="columns">
+    <!-- Colonne Journal des entraînements -->
+    <div class="journal-column">
+      <h2>📓 Journal des entraînements</h2>
+      {#if loading}
+        <p>⏳ Chargement en cours...</p>
+      {:else if suivis.length > 0}
+        {#each suivis as suivi}
+          <div class="journal-card">
+            <button class="delete-button" on:click={() => supprimerSuivi(suivi._id)}>🗑️</button>
+            <strong>{formatDate(suivi.date)}</strong>
+            {#each suivi.exercices as exo}
+              <div style="margin-top: 5px;">
+                <em>{exo.nom}</em>
+                <ul>
+                  {#each exo.series as s, i}
+                    <li>Série {i + 1} : {s.charge} {s.unite} × {s.repetitions} reps</li>
+                  {/each}
+                </ul>
+              </div>
+            {/each}
           </div>
         {/each}
-      </div>
-    {/each}
-  {:else}
-    <p>Aucun suivi enregistré pour l’instant.</p>
-  {/if}
+      {:else}
+        <p>Aucun suivi enregistré pour l’instant.</p>
+      {/if}
+    </div>
+    <!-- Colonne Historique des poids -->
+    <div class="journal-column">
+      <h2>⚖️ Historique des poids</h2>
+      {#if $user?.poidsHistorique?.length > 0}
+        {#each $user.poidsHistorique as p}
+          <div class="journal-card">
+            <strong>{new Date(p.date).toLocaleDateString('fr-FR')}</strong>
+            <p>Poids : {p.poids} kg</p>
+            <button class="delete-button" on:click={() => supprimerPoids(p._id)}>🗑️</button>
+          </div>
+        {/each}
+      {:else}
+        <p>Aucune donnée de poids enregistrée.</p>
+      {/if}
+    </div>
+  </div>
 </div>

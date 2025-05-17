@@ -349,7 +349,7 @@
     <button class="btn" on:click={enregistrer}>
       {routineId ? "Mettre à jour" : "Enregistrer"}
     </button>
-    <button class="btn cancel-btn" on:click={() => navigate("/tableau-de-bord")}>
+    <button class="btn cancel-btn" on:click={() => navigate("/plan-entrainement")}>
       Annuler
     </button>
   </div>

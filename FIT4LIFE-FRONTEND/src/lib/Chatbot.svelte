@@ -1,5 +1,21 @@
 <script>
+
     import { onMount } from "svelte";
+    import { user } from "../common/auth";
+
+    $: currentUser = $user;
+ 
+
+ function isLocked() {
+  return !$user || !$user.frequence;
+}
+
+function lockReason() {
+  if (!$user) return "Veuillez vous connecter";
+  if (!$user.frequence) return "Veuillez compléter l’évaluation";
+  return "";
+}
+
 
     let userInput = "";
     let messages = [
@@ -106,6 +122,17 @@
         padding: 8px;
         cursor: pointer;
     }
+
+    .chatbot-locked {
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #999;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 </style>
 
 <div class="chat-container">
@@ -116,7 +143,12 @@
         {/each}
     </div>
     <div class="chat-footer">
+    {#if isLocked()}
+      <div class="chatbot-locked">{lockReason()}</div>
+    {:else}
         <input type="text" bind:value={userInput} on:keydown={handleKeydown} placeholder="Écris ici..." />
         <button on:click={sendMessage}>Envoyer</button>
-    </div>
+    {/if}
 </div>
+</div>
+

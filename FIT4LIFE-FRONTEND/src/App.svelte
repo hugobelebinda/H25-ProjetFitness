@@ -14,7 +14,6 @@
 
 </script>
 
-<!-- Layout Wrapper -->
 <div class="app-layout">
   <Router>
     <Route path="/" component={Accueil} />
