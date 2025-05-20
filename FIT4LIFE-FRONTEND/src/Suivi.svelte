@@ -4,6 +4,11 @@
   import { user } from './common/auth';
   import { onMount, afterUpdate, tick } from 'svelte';
   import Chart from 'chart.js/auto';
+  
+
+
+let donneesSemaine = [];
+let chartMacrosInstance;
 let lastPoidsHash = "";
   let currentUser;
   let poidsChartInstance;
@@ -33,6 +38,7 @@ let loading1RM = true;
  let loadingUser = true;
   $: loadingUser = !$user || !$user.poidsHistorique; 
   onMount(async () => {
+    chargerSemaine();
     try {
       const res = await fetch("http://localhost:4201/user/exercices");
       const data = await res.json();
@@ -268,6 +274,135 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
       document.getElementById('perfChart')?.scrollIntoView({ behavior: 'smooth' });
     }, 200);
   }
+
+  async function chargerSemaine() {
+  if (!semaineSelectionnee) return;
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const [year, week] = semaineSelectionnee.split("-W");
+
+  try {
+    const res = await fetch(`http://localhost:4201/user/journees/semaine/${year}/${week}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = await res.json(); // [{ date, proteines, glucides, lipides }]
+    if (!Array.isArray(data)) return;
+
+    donneesSemaine = data;
+    await afficherGraphiqueMacros();
+    afficherGraphiqueMacros();
+  } catch (err) {
+    console.error("Erreur chargement semaine :", err);
+  }
+}
+
+
+async function afficherGraphiqueMacros() {
+  await tick(); // S'assurer que le canvas est monté
+
+  const ctx = document.getElementById("macroCaloriesChart");
+  if (!ctx) return;
+
+  if (chartMacrosInstance) chartMacrosInstance.destroy();
+
+  // Pas de tri. On respecte l'ordre exact reçu du backend
+  const labels = donneesSemaine.map(j => j.date).concat("Moy");
+
+  const prot = donneesSemaine.map(j => j.proteines * 4);
+  const gluc = donneesSemaine.map(j => j.glucides * 4);
+  const lip = donneesSemaine.map(j => j.lipides * 9);
+
+  const moy = {
+    prot: Math.round(prot.reduce((a, b) => a + b, 0) / prot.length),
+    gluc: Math.round(gluc.reduce((a, b) => a + b, 0) / gluc.length),
+    lip: Math.round(lip.reduce((a, b) => a + b, 0) / lip.length)
+  };
+
+  prot.push(moy.prot);
+  gluc.push(moy.gluc);
+  lip.push(moy.lip);
+
+  const debut = donneesSemaine[0]?.date ?? "...";
+  const fin = donneesSemaine[donneesSemaine.length - 1]?.date ?? "...";
+
+  const titreGraphique = `Données du ${debut} au ${fin}`;
+
+  chartMacrosInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        { label: "Lipides", data: lip, backgroundColor: "#2ecc71", stack: "stack1" },
+        { label: "Glucides", data: gluc, backgroundColor: "#e74c3c", stack: "stack1" },
+        { label: "Protéines", data: prot, backgroundColor: "#3498db", stack: "stack1" }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: titreGraphique,
+          color: "white",
+          font: { size: 18, weight: "bold" },
+          padding: { top: 10, bottom: 20 }
+        },
+        legend: {
+          labels: { color: "white", font: { size: 13 } }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: "white",
+            font: { size: 12 },
+            callback: (val, index) => labels[index] // Affiche la date brute stockée
+          },
+          grid: { color: "#333" }
+        },
+        y: {
+          stacked: true,
+          ticks: {
+            color: "white",
+            font: { size: 12 },
+            callback: v => v + " kcal"
+          },
+          grid: { color: "#333" },
+          title: {
+            display: true,
+            text: "Calories (kcal)",
+            color: "white",
+            font: { size: 14 }
+          }
+        }
+      }
+    }
+  });
+}
+
+
+
+
+function getISOWeek(date) {
+  const target = new Date(date.valueOf());
+  const dayNr = (date.getDay() + 6) % 7; // 0 (dim) -> 6, 1 (lun) -> 0 ...
+  target.setDate(target.getDate() - dayNr + 3);
+  const firstThursday = new Date(target.getFullYear(), 0, 4);
+  const diff = target - firstThursday;
+  return Math.ceil((diff / (7 * 24 * 60 * 60 * 1000)) + 1);
+}
+
+function getSemaineCouranteISO() {
+  const today = new Date();
+  const week = getISOWeek(today);
+  const year = today.getFullYear();
+  return `${year}-W${week.toString().padStart(2, "0")}`;
+}
+
+let semaineSelectionnee = getSemaineCouranteISO();
 </script>
 
 
@@ -499,6 +634,15 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
 
 
 <div class="suivi-container">
+  <div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
+  <button
+    on:click={() => navigate('./')}
+    style="padding: 10px 18px; background-color: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;"
+  >
+    ⬅️ Retour
+  </button>
+</div>
+
   <div class="dashboard-header">
     <h1>📊 Suivi de {currentUser?.nom || currentUser?.username || 'ton évolution'}</h1>
     <p>Garde le rythme et célèbre chaque progrès 💪</p>
@@ -523,7 +667,8 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
     </div>
 
    <div class="stat-box">
-  <h2>{currentUser?.poidsObjectif} kg</h2>
+  <h2>{currentUser?.poidsObjectif}
+  </h2>
   <p>Votre objectif</p>
   {#if currentUser?.objectif === "Perdre du poids" && currentUser.poids <= currentUser.poidsObjectif}
     <p>Vous avez atteint votre objectif ! Bravo ! 🎉</p>
@@ -670,12 +815,12 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
   </div>
 
   <div class="section">
-    <h3>🏋️ Historique des entraînements</h3>
+    <h3>🏋️ Historique des entraînements et des poids</h3>
     <button
       on:click={() => navigate("/tableau-de-bord")}
       style="margin-top: 10px; padding: 12px 20px; background-color: #18a888; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;"
     >
-      Voir mes entraînements
+      Voir mon historique
     </button>
   </div>
 
@@ -698,26 +843,44 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
   {/if}
 
   <div class="section">
-    <h3>🥗 Suivi Nutritionnel</h3>
-    <p>Calories à viser <strong>{currentUser?.calories}</strong></p>
-    <p>Protéines : {currentUser?.proteines}g | Glucides : {currentUser?.glucides}g | Lipides : {currentUser?.lipides}g</p>
-    <table>
-      <thead>
-        <tr>
-          <th>Nutriment</th>
-          <th>Consommé (g)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each nutriments as n}
-          <tr>
-            <td>{n.nom}</td>
-            <td>
-              <input type="number" bind:value={n.consommé} /> g
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+   <h3 style="color: #18a888; display: flex; align-items: center; gap: 8px;">
+  🥗 <span>Suivi Nutritionnel</span>
+</h3>
+
+<div style="margin-top: 20px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+  <label for="week-picker" style="color: white; font-weight: 500;">
+    Choisir une semaine :
+  </label>
+
+  <input
+  id="week-picker"
+  type="week"
+  bind:value={semaineSelectionnee}
+  on:change={chargerSemaine}
+  style="
+    padding: 12px 20px;
+    background: #1a1a1a;
+    color: white;
+    border: 2px solid #18a888;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 220px;
+    text-align: center;
+    appearance: none;
+  "
+/>
+
+</div>
+
+{#if donneesSemaine.length > 0}
+  <canvas id="macroCaloriesChart" width="400" height="250"></canvas>
+{:else if semaineSelectionnee}
+  <p style="color: #ccc; font-style: italic;">Aucune donnée pour cette semaine.</p>
+{:else}
+  <p style="color: #888;">Sélectionne une semaine pour afficher les données nutritionnelles 📅</p>
+{/if}
+
+</div>
 </div>

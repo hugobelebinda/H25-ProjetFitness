@@ -105,15 +105,38 @@
 </script>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 25px;
-    background: #111;
-    color: white;
-    border-radius: 12px;
-    box-shadow: 0px 0px 10px rgba(24, 168, 136, 0.3);
-  }
+
+  
+
+  .dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.2rem;
+  color: #18a888;
+  margin-bottom: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.ligne-verte {
+  height: 4px;
+  width: 80px;
+  background-color: #18a888;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+ .container {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 60px 80px;
+  background-color: #181818;
+  color: white;
+  box-sizing: border-box;
+}
 
   h2 {
     color: #18a888;
@@ -139,12 +162,17 @@
     margin-bottom: 20px;
   }
 
-  .exercice {
-    background: #222;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-  }
+ .exercice {
+  background: #222;
+  padding: 25px;
+  border-radius: 12px;
+  border: 2px solid #18a888; /* ✅ Bordure verte */
+  box-shadow: 0 0 20px rgba(24, 168, 136, 0.15);
+  margin-bottom: 30px;
+}
+.exercice:hover {
+  box-shadow: 0 0 25px rgba(24, 168, 136, 0.4);
+}
 
   .exercice h3 {
     margin-bottom: 15px;
@@ -194,29 +222,38 @@
   }
 
   .custom-dropdown {
-    background: #222;
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 15px;
-  }
+  background: #181818;
+  border: 1px solid #18a888;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  overflow-x: hidden;      /* ← empêche la scroll bar horizontale */
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
-  .custom-dropdown details {
-    margin-bottom: 10px;
-  }
 
-  .custom-dropdown summary {
-    cursor: pointer;
-    color: #18a888;
-    font-weight: bold;
-  }
+ .custom-dropdown details {
+  margin-bottom: 10px;
+  border-left: 2px solid #18a888;
+  padding-left: 8px;
+}
 
-  .custom-dropdown details > .contenu {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 5px;
-    padding-left: 10px;
-  }
+.custom-dropdown summary {
+  cursor: pointer;
+  color: #18a888;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+  .custom-dropdown .contenu {
+  max-height: none;
+  overflow-y: visible;
+  overflow-x: hidden;      /* ← empêche les scrolls horizontaux */
+  padding-left: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
 
   .exercice-btn {
     display: block;
@@ -260,10 +297,41 @@
     border: 1px solid #444;
     border-radius: 6px;
   }
+
+  .btn {
+  padding: 12px;
+  background: #18a888;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.2);
+}
+
+.btn:hover {
+  background: white;
+  color: #18a888;
+  box-shadow: 0 0 20px rgba(24, 168, 136, 0.3);
+}
+
+.cancel-btn {
+  background: #cc0000;
+}
+
+.cancel-btn:hover {
+  background: white;
+  color: #cc0000;
+}
 </style>
 
 <div class="container">
-  <h2>{routineId ? "Modifier une routine" : "Créer une routine"}</h2>
+  <div class="dashboard-header">
+  <h1>{routineId ? "✏️ Modifier une routine" : "🆕 Créer une routine"}</h1>
+  <div class="ligne-verte"></div>
+</div>
 
   <label>Nom de la routine</label>
   <input type="text" bind:value={nomRoutine} placeholder="Routine du haut du corps" />

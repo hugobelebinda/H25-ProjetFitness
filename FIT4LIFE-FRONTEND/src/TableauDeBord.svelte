@@ -1,10 +1,40 @@
 <script>
   import { Link } from "svelte-routing";
   import { onMount } from 'svelte';
-  import { user } from './common/auth'; // store utilisateur
+  import { user } from './common/auth';
+  import { tick } from 'svelte';
 
   let suivis = [];
   let loading = true;
+  let message = null;
+  let messageType = "success"; // or "error"
+
+  let confirmAction = null;
+  let showConfirmModal = false;
+  let confirmText = "";
+
+  function showMessage(text, type = "success") {
+    message = text;
+    messageType = type;
+    tick().then(() => setTimeout(() => message = null, 3000));
+  }
+
+  function demanderConfirmation(action, texte) {
+    confirmAction = action;
+    confirmText = texte;
+    showConfirmModal = true;
+  }
+
+  function confirmer() {
+    if (confirmAction) confirmAction();
+    showConfirmModal = false;
+    confirmAction = null;
+  }
+
+  function annulerConfirmation() {
+    showConfirmModal = false;
+    confirmAction = null;
+  }
 
   onMount(async () => {
     const token = localStorage.getItem("token");
@@ -29,9 +59,6 @@
   }
 
   async function supprimerPoids(id) {
-    const confirmation = confirm("Supprimer cette entrée de poids ?");
-    if (!confirmation) return;
-
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -44,20 +71,15 @@
       if (!res.ok) throw new Error("Erreur lors de la suppression");
 
       const data = await res.json();
-user.set(data.user); 
-
-
-      alert("Poids supprimé !");
+      user.set(data.user);
+      showMessage("Poids supprimé !", "success");
     } catch (err) {
       console.error(err);
-      alert("Erreur pendant la suppression du poids.");
+      showMessage("Erreur pendant la suppression du poids.", "error");
     }
   }
 
   async function supprimerSuivi(id) {
-    const confirmation = confirm("Êtes-vous sûr de vouloir supprimer ce suivi ?");
-    if (!confirmation) return;
-
     const token = localStorage.getItem("token");
 
     try {
@@ -72,125 +94,207 @@ user.set(data.user);
       if (!res.ok) throw new Error("Échec de la suppression");
 
       suivis = suivis.filter(s => s._id !== id);
+      showMessage("Suivi supprimé !", "success");
     } catch (err) {
       console.error(err);
-      alert("Erreur pendant la suppression du suivi.");
+      showMessage("Erreur pendant la suppression du suivi.", "error");
     }
   }
 </script>
 
-
 <style>
-  /* Titre principal */
-.dashboard-container h1 {
-  color: #fff !important;
-  font-size: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
+  .suivi-container {
+    padding: 40px;
+    color: white;
+    background-color: #181818;
+    min-height: 100vh;
+  }
 
-/* Sous-titres des colonnes */
-.journal-column h2 {
-  color: #fff !important;
-  font-size: 1.5em;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
- .dashboard-container {
-  background-color: #0e0e0e;
-  padding: 40px 20px 20px 20px;
-  text-align: center;
-}
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
 
-.journal-container {
-  background-color: #0e0e0e;
-  padding: 0 20px 40px 20px;
-  width: 100%;
-  margin: 0 auto;
-}
+  .dashboard-header h1 {
+    font-size: 2.5rem;
+    color: #18a888;
+  }
 
-.columns {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
+  .dashboard-header p {
+    margin-top: 10px;
+    color: #aaa;
+    font-size: 1.1rem;
+  }
 
-.journal-column {
-  flex: 1;
-  min-width: 340px;
-  max-width: 600px;
-}
+  .columns {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+  }
 
+  .journal-column {
+    flex: 1;
+    min-width: 340px;
+    max-width: 600px;
+    background: #222;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(24, 168, 136, 0.15);
+  }
 
-.journal-card {
-  background-color: #1a1a1a;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 0 20px rgba(24, 224, 168, 0.2);
-  margin-bottom: 20px;
-  position: relative;
-  color: white;
-  transition: box-shadow 0.3s;
-}
+  .journal-column h2 {
+    color: #18a888;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
 
-.journal-card:hover {
-  box-shadow: 0 0 25px rgba(24, 224, 168, 0.35);
-}
+  .journal-card {
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(24, 168, 136, 0.2);
+    margin-bottom: 20px;
+    position: relative;
+    color: white;
+    transition: box-shadow 0.3s;
+  }
 
-.journal-card strong {
-  color: #18e0a8;
-  font-size: 1.1em;
-  display: block;
-  margin-bottom: 10px;
-}
+  .journal-card:hover {
+    box-shadow: 0 0 25px rgba(24, 168, 136, 0.4);
+  }
 
-.journal-card em {
-  color: #b3fce3;
-  font-style: italic;
-}
+  .journal-card strong {
+    color: #18e0a8;
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 10px;
+  }
 
-ul {
-  padding-left: 20px;
-  text-align: left;
-}
+  .journal-card em {
+    color: #b3fce3;
+    font-style: italic;
+  }
 
-.delete-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: none;
-  color: #ccc;
-  font-size: 1.2em;
-  cursor: pointer;
-}
+  .delete-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    font-size: 1.2em;
+    cursor: pointer;
+  }
 
-p {
-  color: #ccc;
-}
+  ul {
+    padding-left: 20px;
+    text-align: left;
+  }
 
+  p {
+    color: #ccc;
+  }
 
+  .back-button {
+    margin-bottom: 20px;
+    padding: 10px 18px;
+    background-color: #18a888;
+    color: #181818;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
 
+  .back-button:hover {
+    background-color: #14997a;
+  }
+
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #2b2b2b;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    border-left: 5px solid;
+  }
+  .toast.success { border-color: #18a888; }
+  .toast.error { border-color: #e05f5f; }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+
+  .modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(24, 168, 136, 0.3);
+    text-align: center;
+    color: white;
+    max-width: 400px;
+  }
+
+  .modal-content button {
+    margin: 10px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .modal-content .confirm {
+    background-color: #18a888;
+    color: #181818;
+  }
+  .modal-content .cancel {
+    background-color: #444;
+    color: #ccc;
+  }
 </style>
 
-<div class="dashboard-container">
-  <h1>📊 Journal de Bord</h1>
-  <Link to="/">
-    <button class="add-button">🏠 Retour à l'accueil</button>
-  </Link>
-</div>
+{#if message}
+  <div class="toast {messageType}">{message}</div>
+{/if}
 
-<div class="journal-container">
+{#if showConfirmModal}
+  <div class="modal">
+    <div class="modal-content">
+      <p>{confirmText}</p>
+      <button class="confirm" on:click={confirmer}>Oui</button>
+      <button class="cancel" on:click={annulerConfirmation}>Non</button>
+    </div>
+  </div>
+{/if}
+
+<div class="suivi-container">
+  <div class="dashboard-header">
+    <h1>📊 Journal de Bord</h1>
+    <Link to="/">
+      <button class="back-button">🏠 Retour à l'accueil</button>
+    </Link>
+  </div>
+
   <div class="columns">
-    <!-- Colonne Journal des entraînements -->
     <div class="journal-column">
       <h2>📓 Journal des entraînements</h2>
       {#if loading}
@@ -198,7 +302,7 @@ p {
       {:else if suivis.length > 0}
         {#each suivis as suivi}
           <div class="journal-card">
-            <button class="delete-button" on:click={() => supprimerSuivi(suivi._id)}>🗑️</button>
+            <button class="delete-button" on:click={() => demanderConfirmation(() => supprimerSuivi(suivi._id), 'Supprimer ce suivi ?')}>🗑️</button>
             <strong>{formatDate(suivi.date)}</strong>
             {#each suivi.exercices as exo}
               <div style="margin-top: 5px;">
@@ -216,7 +320,7 @@ p {
         <p>Aucun suivi enregistré pour l’instant.</p>
       {/if}
     </div>
-    <!-- Colonne Historique des poids -->
+
     <div class="journal-column">
       <h2>⚖️ Historique des poids</h2>
       {#if $user?.poidsHistorique?.length > 0}
@@ -224,7 +328,7 @@ p {
           <div class="journal-card">
             <strong>{new Date(p.date).toLocaleDateString('fr-FR')}</strong>
             <p>Poids : {p.poids} kg</p>
-            <button class="delete-button" on:click={() => supprimerPoids(p._id)}>🗑️</button>
+            <button class="delete-button" on:click={() => demanderConfirmation(() => supprimerPoids(p._id), 'Supprimer ce poids ?')}>🗑️</button>
           </div>
         {/each}
       {:else}

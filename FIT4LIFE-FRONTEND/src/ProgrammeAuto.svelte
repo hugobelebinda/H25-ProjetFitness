@@ -414,7 +414,8 @@
   background-color: #222;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(24, 168, 136, 0.2);
+  border: 2px solid #18a888; /* ✅ cadre vert */
+  box-shadow: 0 0 20px rgba(24, 168, 136, 0.15);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -428,10 +429,18 @@
 }
 
 .exo {
+  background-color: #1c1c1c;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.05);
+  transition: box-shadow 0.3s;
+}
+.exo:hover {
+  box-shadow: 0 0 15px rgba(24, 168, 136, 0.2);
 }
 
 .exo img {
@@ -454,14 +463,16 @@
   border: none;
   color: white;
   font-weight: bold;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #18a888;
+  box-shadow: 0 0 12px rgba(24, 168, 136, 0.2);
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .ajouter-btn:hover {
   background: #13c1a3;
+  box-shadow: 0 0 18px rgba(24, 168, 136, 0.3);
 }
 .ajouter-btn-global {
   display: block;
@@ -480,12 +491,31 @@
   background-color: #13c1a3;
 }
 
+.back-button {
+  background-color: #18a888;
+  color: #181818;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.back-button:hover {
+  background-color: #13c1a3;
+}
+
 </style>
 
 {#if loading}
   <p class="text-center">Chargement...</p>
 {:else}
   <div class="page-container">
+    <button class="back-button" on:click={() => history.back()}>
+  ⬅️ Retour
+</button>
     <h2 class="split-title">{plan}</h2>
     <select class="changer-split-select" bind:value={plan} on:change={() => changerPlan(plan)}>
       {#each splitsDisponibles as split}

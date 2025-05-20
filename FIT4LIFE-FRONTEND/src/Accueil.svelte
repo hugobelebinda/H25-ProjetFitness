@@ -45,13 +45,30 @@
   width: 100%;
 }
 
+.sidebar h2 {
+  color: white;
+}
+
+.sidebar-nav .nav-button {
+  color: white !important; /* Forcera les textes des boutons actifs */
+}
+
+.nav-button.locked {
+  color: white; /* Texte grisé remplacé par blanc */
+  border-color: #888;
+}
+
+.lock-msg {
+  color: #ffaaaa; /* Optionnel : message de verrouillage plus doux */
+}
+
 :global(.nav-button) {
   display: block;
   width: 100%;
   padding: 12px 20px;
   background: #111;
   border: 2px solid #18a888;
-  color: #18a888;
+  color: white !important;
   text-decoration: none;
   font-size: 1rem;
   border-radius: 10px;
@@ -156,6 +173,7 @@
         position: relative;
         z-index: 2;
     }
+    
 
     .vidbackground-content h1 {
         font-size: 2.8em;
@@ -302,6 +320,9 @@
   margin-top: 4px;
 }
 
+.bouton-eval {
+  margin-top: 14px;
+}
     
 </style>
 
@@ -319,8 +340,9 @@
       { label: "📊 Journal de bord", to: "/tableau-de-bord" },
       { label: "📈 Suivi", to: "/suivi" },
       { label: "ℹ️ En savoir plus", to: "/en-savoir-plus" },
+      { label: "🥗 Plan nutritionnel", to: "/plan-nutritionnel" }
     ] as item}
-    <!--{ label: "🥗 Plan nutritionnel", to: "/plan-nutritionnel" }-->
+    
     
     <div class="nav-wrapper">
       {#if $user && $user.frequence}
@@ -371,13 +393,13 @@
             <p><strong>Rejoins la communauté FIT4LIFE et atteins tes objectifs fitness avec des entraînements et conseils adaptés.</strong></p>
             {#if currentUser}
   <Link to="/evaluation">
-    <button class="button">
-      {#if currentUser.frequence || currentUser.objectif || currentUser.entrainement}
-        Réévaluer
-      {:else}
-        Évaluer
-      {/if}
-    </button>
+    <button class="button bouton-eval">
+  {#if currentUser.frequence || currentUser.objectif || currentUser.entrainement}
+    Réévaluer
+  {:else}
+    Évaluer
+  {/if}
+</button>
   </Link>
 {:else}
   <div class="locked-btn">

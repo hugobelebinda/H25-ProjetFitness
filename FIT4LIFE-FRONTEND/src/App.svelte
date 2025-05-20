@@ -12,7 +12,12 @@
   import AjoutExercice from "./AjoutExercice.svelte";
   import ProgrammeAuto from './ProgrammeAuto.svelte';
 
+  
+
+
 </script>
+
+
 
 <div class="app-layout">
   <Router>
@@ -33,6 +38,8 @@
     <p>&copy; {new Date().getFullYear()} Projet Fitness. Tous droits réservés.</p>
   </footer>
 </div>
+
+
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');

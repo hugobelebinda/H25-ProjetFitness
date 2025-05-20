@@ -12,6 +12,7 @@
   let poidsUnit = "kg";
   let suiviDate = new Date().toISOString().split("T")[0];
   let currentUser = $user;
+  
 
   function renderMarkdown(text) {
     return marked.parse(text);
@@ -209,6 +210,48 @@
 
 <style>
 
+  .dashboard-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.4rem;
+  color: #18a888;
+  margin-bottom: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.ligne-verte {
+  height: 4px;
+  width: 80px;
+  background-color: #18a888;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+
+  
+button {
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.15);
+}
+button:hover {
+  box-shadow: 0 0 20px rgba(24, 168, 136, 0.3);
+}
+
+.ligne-verte {
+  height: 4px;
+  background-color: #18a888;
+  border-radius: 4px;
+  margin: 10px 0 25px;
+  width: 100%;
+}
+
+
+  
+
 .page-container {
   background-color: #181818;
   color: white;
@@ -225,12 +268,16 @@
   }
 
   .sidebar {
-    width: 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border: 2px solid #18a888;
+  border-radius: 20px;
+  align-self: flex-start; 
+  background-color: #181818;
+}
   .content {
     flex: 1;
   }
@@ -254,11 +301,25 @@
   }
 
   .plan-item {
-    background: #222;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-  }
+  background-color: #2b2b2b;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(24, 168, 136, 0.2);
+  margin-bottom: 20px;
+  position: relative;
+  color: white;
+  transition: box-shadow 0.3s;
+}
+
+.plan-item:hover {
+  box-shadow: 0 0 25px rgba(24, 168, 136, 0.4);
+}
+
+.plan-item h3 {
+  color: #18e0a8;
+  font-size: 1.3em;
+  margin-bottom: 10px;
+}
 
   h2 {
     color: #18a888;
@@ -287,7 +348,13 @@
   <div class="container">
   <!-- Colonne gauche -->
   <div class="sidebar">
-    <Link to=" " class="retour">← Retour</Link>
+   
+    <button
+  on:click={() => navigate('/')}
+  style="padding: 10px 18px; background-color: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;"
+>
+  ⬅️ Retour à l'accueil
+</button>
 
     <Link to="/ajout-exercice">
       <button>Créer un programme</button>
@@ -305,11 +372,11 @@
       {/if}
     </button>
 
-    {#if isConnected}
+    <!-- {#if isConnected}
       <button on:click={seDeconnecter} style="margin-top: auto; background: red;">
         Se déconnecter
       </button>
-    {/if}
+    {/if} -->
   </div>
 
   <!-- Colonne droite -->
@@ -320,8 +387,10 @@
       <Link to="/connexion" style="color:#18a888; text-decoration: underline">Se connecter</Link>
     </p>
   {:else}
-    <h2>Vos entraînements :</h2>
-
+    <div class="dashboard-header">
+  <h1>📋 Vos entraînements</h1>
+  <div class="ligne-verte"></div>
+</div>
     {#if entrainements.length === 0}
       <p>Aucun entraînement pour le moment.</p>
     {:else}
