@@ -1,21 +1,19 @@
 <script>
+import { user } from "../common/auth";
 
-    import { onMount } from "svelte";
-    import { user } from "../common/auth";
-
-    $: currentUser = $user;
+let currentUser;
+$: currentUser = $user;
  
 
- function isLocked() {
-  return !$user || !$user.frequence;
-}
+$: isLocked = !$user || !$user.frequence;
 
-function lockReason() {
-  if (!$user) return "Veuillez vous connecter";
-  if (!$user.frequence) return "Veuillez compléter l’évaluation";
-  return "";
-}
+$: lockReason = !$user
+  ? "Veuillez vous connecter"
+  : !$user.frequence
+  ? "Veuillez compléter l’évaluation"
+  : "";
 
+  let isOpen = true;
 
     let userInput = "";
     let messages = [
@@ -123,32 +121,73 @@ function lockReason() {
         cursor: pointer;
     }
 
-    .chatbot-locked {
+.chatbot-locked {
+    background: #fff0f0;
+    color: #d33;
+    font-weight: bold;
+    border: 1px solid #d33;
+    border-radius: 8px;
+    padding: 10px;
     width: 100%;
     text-align: center;
     font-size: 0.9rem;
-    color: #999;
-    background: #f9f9f9;
-    padding: 10px;
-    border-radius: 5px;
+}
+
+.chat-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #222; /* fond gris foncé */
+  color: white;
+  border: none;
+  font-size: 1.4rem;
+  padding: 14px 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.chat-toggle:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  float: right;
+  cursor: pointer;
 }
 
 </style>
 
-<div class="chat-container">
-    <div class="chat-header">🤖 Coach Flex AI</div>
+{#if isOpen}
+  <div class="chat-container">
+    <div class="chat-header">
+      🤖 Coach Flex AI
+      <button class="close-btn" on:click={() => isOpen = false}>✖</button>
+    </div>
     <div class="chat-body">
-        {#each messages as msg}
-            <div class="message {msg.sender}">{msg.text}</div>
-        {/each}
+      {#each messages as msg}
+        <div class="message {msg.sender}">{msg.text}</div>
+      {/each}
     </div>
     <div class="chat-footer">
-    {#if isLocked()}
-      <div class="chatbot-locked">{lockReason()}</div>
-    {:else}
+      {#if isLocked}
+        <div class="chatbot-locked">{lockReason}</div>
+      {:else}
         <input type="text" bind:value={userInput} on:keydown={handleKeydown} placeholder="Écris ici..." />
         <button on:click={sendMessage}>Envoyer</button>
-    {/if}
-</div>
-</div>
+      {/if}
+    </div>
+  </div>
+{/if}
+
+{#if !isOpen}
+  <button class="chat-toggle" on:click={() => isOpen = true}>💬</button>
+{/if}
 

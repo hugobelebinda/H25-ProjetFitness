@@ -1,23 +1,34 @@
 <script>
-    import { onMount } from "svelte";
+  import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
   import { Link } from "svelte-routing";
   import { login, user } from './common/auth';
- 
+  
 
   let email = "";
   let password = "";
+  let message = "";
+  let messageType = "";
+
+  let isLoggedIn = false;
 
   onMount(() => {
     const unsubscribe = user.subscribe(u => {
-      if (u) navigate("/");
+      if (u && isLoggedIn) {
+        navigate("/");
+      }
     });
     return unsubscribe;
   });
 
   async function connecter() {
+    message = "";
+    messageType = "";
+    isLoggedIn = false;
+
     if (!email || !password) {
-      alert("Veuillez remplir tous les champs.");
+      message = "Veuillez remplir tous les champs.";
+      messageType = "error";
       return;
     }
 
@@ -25,34 +36,60 @@
       const response = await fetch("http://localhost:4201/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-                frequence: user.frequence,
-                body: JSON.stringify({ email, motDePasse: password})
+        body: JSON.stringify({ email, motDePasse: password })
       });
 
       const data = await response.json();
-
-      console.log(data)
-      console.log(response)
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
         login(data.user, data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        alert("Connexion réussie !");
-        navigate("/");
+        message = "Connexion réussie !";
+        messageType = "success";
+        isLoggedIn = true;
+
+        // Redirection après 1.5 seconde
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       } else {
-        alert("Erreur de connexion : " + (data.message || "Erreur inconnue"));
+        message = data.message || "Erreur inconnue";
+        messageType = "error";
       }
     } catch (error) {
       console.error("Erreur lors de la connexion :", error);
-      alert("Une erreur s'est produite.");
+      message = "Une erreur s'est produite.";
+      messageType = "error";
     }
   }
-  
 </script>
+
+
 
   
   <style>
+  .message {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
     .page-background {
       position: fixed;
       top: 0;
@@ -123,24 +160,31 @@
       font-size: 14px;
       color: white;
     }
+
   </style>
-  
   <div class="page-background">
-    <div class="form-content">
-      <h2>Connexion</h2>
-      <form on:submit|preventDefault={connecter}>
-        <input type="email" bind:value={email} placeholder="Email" required />
-        <input type="password" bind:value={password} placeholder="Mot de passe" required />
-        <button type="submit">Se connecter</button>
-      </form>
-  
-      <button class="annuler" on:click={() => navigate("/")} style="margin-top: 10px; background: red;">
-        Annuler
-      </button>
-  
-      <p class="lien-connexion">
-        Pas encore inscrit ? <Link to="/inscription">Créez un compte</Link>
-      </p>
-    </div>
+  <div class="form-content">
+    <h2>Connexion</h2>
+    <form on:submit|preventDefault={connecter}>
+      <input type="email" bind:value={email} placeholder="Email" required />
+      <input type="password" bind:value={password} placeholder="Mot de passe" required />
+      <button type="submit">Se connecter</button>
+    </form>
+
+    <button class="annuler" on:click={() => navigate("/")} style="margin-top: 10px; background: red;">
+      Annuler
+    </button>
+
+    <p class="lien-connexion">
+      Pas encore inscrit ? <Link to="/inscription">Créez un compte</Link>
+    </p>
+
+    {#if message}
+      <div class="message {messageType}">
+        {message}
+      </div>
+    {/if}
   </div>
+</div>
+
   

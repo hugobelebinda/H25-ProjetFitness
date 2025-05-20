@@ -10,104 +10,150 @@
 
 <style>
 
-    .page-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("https://t3.ftcdn.net/jpg/03/86/34/64/360_F_386346461_ycljRSlIn3X54bITkN6YD8jlL8gjtinh.jpg") no-repeat center center/cover;
-    background-size: cover;
-    background-position: center;
-    
-    }
+   .page-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: #181818;
+  color: white;
+  padding: 50px 20px;
+}
 
-    .container {
-        max-width: 900px;
-        margin: 50px auto;
-        padding: 30px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-        animation: fadeIn 1s ease-in-out;
-    }
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+  background: #222;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(24, 168, 136, 0.3);
+  animation: fadeIn 0.6s ease-in-out;
+}
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    .titre {
-        font-size: 2.5em;
-        color: #18a888;
-        margin-bottom: 20px;
-    }
+.titre {
+  font-size: 2.8em;
+  color: #18a888;
+  margin-bottom: 30px;
+  text-align: center;
+}
 
-    .section {
-        margin-top: 30px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-    }
+.section {
+  margin-top: 40px;
+  background: #1f1f1f;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.2);
+}
 
-    .section h2 {
-        color: #18a888;
-        margin-bottom: 10px;
-    }
+.section h2 {
+  color: #18a888;
+  margin-bottom: 15px;
+  font-size: 1.6em;
+}
 
-    .section ul {
-        list-style: none;
-        padding: 0;
-    }
+.section p, .section ul li {
+  font-size: 1.1em;
+  line-height: 1.6;
+}
 
-    .section ul li {
-        margin: 10px 0;
-        font-size: 1.2em;
-    }
+.section ul {
+  padding-left: 0;
+  list-style: none;
+}
 
-    .content {
-        margin-top: 30px;
-    }
+.section ul li::before {
+  content: "✔ ";
+  color: #18a888;
+  margin-right: 8px;
+}
 
-    .content button {
-        padding: 12px 24px;
-        font-size: 1.2em;
-        border: 2px solid #18a888;
-        background: white;
-        color: #18a888;
-        cursor: pointer;
-        border-radius: 20px;
-        transition: all 0.3s ease-in-out;
-    }
+.testimonials {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
 
-    .content button:hover {
-        background: #18a888;
-        color: white;
-        transform: scale(1.05);
-        box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
-    }
+.testimonial {
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.3);
+  max-width: 280px;
+  font-style: italic;
+}
 
-    .testimonials {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 20px;
-        flex-wrap: wrap;
-    }
+.testimonial h4 {
+  margin-top: 10px;
+  color: #ccc;
+  font-style: normal;
+}
 
-    .testimonial {
-        width: 250px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(24, 168, 136, 0.5);
-    }
+.content {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.content h2 {
+  margin-bottom: 20px;
+  color: #18a888;
+}
+
+.content button {
+  padding: 12px 30px;
+  background: white;
+  color: #18a888;
+  font-size: 1.2em;
+  border: 2px solid #18a888;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.content button:hover {
+  background: #18a888;
+  color: white;
+  box-shadow: 0 0 12px rgba(24, 168, 136, 0.5);
+  transform: scale(1.05);
+}
+
+.retour-wrapper {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.btn-retour {
+  background: transparent;
+  color: #18a888;
+  border: 2px solid #18a888;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-retour:hover {
+  background: #18a888;
+  color: white;
+  box-shadow: 0 0 10px rgba(24, 168, 136, 0.5);
+}
+
+
 </style>
 
 <div class="page-background">
 <div class="container">
+    <div class="retour-wrapper">
+  <Link to="/"><button class="btn-retour">← Retour à l'accueil</button></Link>
+</div>
     <h1 class="titre">En savoir plus sur Fit4Life</h1>
 
     <div class="section">

@@ -336,11 +336,11 @@
   <nav class="sidebar-nav">
     {#each [
       { label: "📋 Plan d'entraînement", to: "/plan-entrainement" },
-      
-      { label: "📊 Journal de bord", to: "/tableau-de-bord" },
+      { label: "🥗 Plan nutritionnel", to: "/plan-nutritionnel" },
       { label: "📈 Suivi", to: "/suivi" },
+      { label: "📊 Journal de bord", to: "/tableau-de-bord" },
       { label: "ℹ️ En savoir plus", to: "/en-savoir-plus" },
-      { label: "🥗 Plan nutritionnel", to: "/plan-nutritionnel" }
+    
     ] as item}
     
     
