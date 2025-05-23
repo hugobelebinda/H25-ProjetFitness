@@ -1,56 +1,63 @@
 <script>
-import { user } from "../common/auth";
+  import { user } from "../common/auth";
 
-let currentUser;
-$: currentUser = $user;
- 
+  let currentUser;
+  // reactive assignment : currentUser suit $user
+  $: currentUser = $user;
 
-$: isLocked = !$user || !$user.frequence;
+  // lock état : bloqué si pas connecté ou évaluation incomplète
+  $: isLocked = !$user || !$user.frequence;
 
-$: lockReason = !$user
-  ? "Veuillez vous connecter"
-  : !$user.frequence
-  ? "Veuillez compléter l’évaluation"
-  : "";
+  // raison du blocage affichée
+  $: lockReason = !$user
+    ? "Veuillez vous connecter"
+    : !$user.frequence
+    ? "Veuillez compléter l’évaluation"
+    : "";
 
-  let isOpen = true;
+  let isOpen = true;  // état ouvert/fermé d'un panel ?
 
-    let userInput = "";
-    let messages = [
-        { sender: "bot", text: "Salut! Moi c'est Coach Flex! Pose-moi une question 😊" }
-    ];
+  let userInput = ""; // texte saisi par l'utilisateur
+  let messages = [
+    { sender: "bot", text: "Salut! Moi c'est Coach Flex! Pose-moi une question 😊" }
+  ];
 
-    async function sendMessage() {
-        const text = userInput.trim();
-        if (!text) return;
+  // envoie message à l'API chat backend
+  async function sendMessage() {
+    const text = userInput.trim();
+    if (!text) return;
 
-        messages = [...messages, { sender: "user", text }];
-        userInput = "";
+    // ajoute message utilisateur
+    messages = [...messages, { sender: "user", text }];
+    userInput = "";
 
-        try {
-            const res = await fetch("http://localhost:3001/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-             body: JSON.stringify({ message: text })
-        });
+    try {
+      const res = await fetch("http://localhost:3001/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
 
-            const data = await res.json();
+      const data = await res.json();
 
-            console.log("Réponse reçue dans Svelte :", data);
-            messages = [...messages, { sender: "bot", text: data.answer }];
-        } catch (error) {
-            console.error("Erreur:", error);
-            messages = [...messages, { sender: "bot", text: "Désolé, une erreur est survenue." }];
-        }
+      console.log("Réponse reçue dans Svelte :", data);
+      // ajoute réponse bot
+      messages = [...messages, { sender: "bot", text: data.answer }];
+    } catch (error) {
+      console.error("Erreur:", error);
+      messages = [...messages, { sender: "bot", text: "Désolé, une erreur est survenue." }];
     }
+  }
 
-    function handleKeydown(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            sendMessage();
-        }
+  // envoie message si touche Enter pressée
+  function handleKeydown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
     }
+  }
 </script>
+
 
 <style>
     .chat-container {

@@ -6,354 +6,95 @@
   let programme = {};
   let loading = true;
 
+  // Définitions des programmes types avec exercices par groupe/jour
   const programmes = {
-  "Push Pull Legs": {
-    Push: [
-      {
-        nom: "Développé couché à la barre",
-        image: "https://via.placeholder.com/64",
-        description: "Développé couché à la barre: Exercice de base pour les pectoraux.",
-        series: 4,
-        repetitions: 8
-      },
-      {
-        nom: "Développé incliné aux haltères",
-        image: "https://via.placeholder.com/64",
-        description: "Développé incliné aux haltères: Cible le haut des pectoraux.",
-        series: 3,
-        repetitions: 10
-      },
-      {
-        nom: "Élévations latérales aux haltères",
-        image: "https://via.placeholder.com/64",
-        description: "Élévations latérales aux haltères: Renforce les épaules latérales.",
-        series: 3,
-        repetitions: 15
-      },
-      {
-        nom: "Extension triceps à la poulie haute (corde)",
-        image: "https://via.placeholder.com/64",
-        description: "Extension triceps à la poulie haute (corde): Cible les triceps efficacement.",
-        series: 3,
-        repetitions: 12
-      }
-    ],
-    Pull: [
-      {
-        nom: "Tractions pronation",
-        image: "https://via.placeholder.com/64",
-        description: "Tractions pronation: Renforce le dos et les biceps.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Rowing à la poulie basse",
-        image: "https://via.placeholder.com/64",
-        description: "Rowing à la poulie basse: Exercice horizontal pour le dos.",
-        series: 4,
-        repetitions: 12
-      },
-      {
-        nom: "Curl biceps aux haltères",
-        image: "https://via.placeholder.com/64",
-        description: "Curl biceps aux haltères: Travail direct des biceps.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Face pull à la poulie",
-        image: "https://via.placeholder.com/64",
-        description: "Face pull à la poulie: Renforce les deltoïdes postérieurs et les trapèzes.",
-        series: 3,
-        repetitions: 15
-      }
-    ],
-    Legs: [
-      {
-        nom: "Squat à la barre libre",
-        image: "https://via.placeholder.com/64",
-        description: "Squat à la barre libre: Exercice de base pour les jambes.",
-        series: 4,
-        repetitions: 8
-      },
-      {
-        nom: "Presse à jambes inclinée",
-        image: "https://via.placeholder.com/64",
-        description: "Presse à jambes inclinée: Travail des quadriceps et fessiers.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Fentes marchées",
-        image: "https://via.placeholder.com/64",
-        description: "Fentes marchées: Fentes dynamiques pour jambes et équilibre.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Leg curl allongé",
-        image: "https://via.placeholder.com/64",
-        description: "Leg curl allongé: Travail en isolation des ischios-jambiers.",
-        series: 3,
-        repetitions: 15
-      }
-    ]
-  },
+    "Push Pull Legs": {
+      Push: [
+        { nom: "Développé couché à la barre", image: "https://via.placeholder.com/64", description: "Exercice de base pour les pectoraux.", series: 4, repetitions: 8 },
+        { nom: "Développé incliné aux haltères", image: "https://via.placeholder.com/64", description: "Cible le haut des pectoraux.", series: 3, repetitions: 10 },
+        { nom: "Élévations latérales aux haltères", image: "https://via.placeholder.com/64", description: "Renforce les épaules latérales.", series: 3, repetitions: 15 },
+        { nom: "Extension triceps à la poulie haute (corde)", image: "https://via.placeholder.com/64", description: "Cible les triceps efficacement.", series: 3, repetitions: 12 }
+      ],
+      Pull: [
+        { nom: "Tractions pronation", image: "https://via.placeholder.com/64", description: "Renforce le dos et les biceps.", series: 4, repetitions: 10 },
+        { nom: "Rowing à la poulie basse", image: "https://via.placeholder.com/64", description: "Exercice horizontal pour le dos.", series: 4, repetitions: 12 },
+        { nom: "Curl biceps aux haltères", image: "https://via.placeholder.com/64", description: "Travail direct des biceps.", series: 3, repetitions: 12 },
+        { nom: "Face pull à la poulie", image: "https://via.placeholder.com/64", description: "Renforce deltoïdes postérieurs et trapèzes.", series: 3, repetitions: 15 }
+      ],
+      Legs: [
+        { nom: "Squat à la barre libre", image: "https://via.placeholder.com/64", description: "Exercice de base pour les jambes.", series: 4, repetitions: 8 },
+        { nom: "Presse à jambes inclinée", image: "https://via.placeholder.com/64", description: "Travail des quadriceps et fessiers.", series: 3, repetitions: 12 },
+        { nom: "Fentes marchées", image: "https://via.placeholder.com/64", description: "Fentes dynamiques pour jambes et équilibre.", series: 3, repetitions: 12 },
+        { nom: "Leg curl allongé", image: "https://via.placeholder.com/64", description: "Travail en isolation des ischios-jambiers.", series: 3, repetitions: 15 }
+      ]
+    },
+    "Upper Lower": {
+      Upper: [
+        { nom: "Développé couché à la barre", image: "https://via.placeholder.com/64", description: "Travail des pectoraux en force.", series: 4, repetitions: 10 },
+        { nom: "Développé militaire à la barre", image: "https://via.placeholder.com/64", description: "Cible les épaules antérieures.", series: 4, repetitions: 10 },
+        { nom: "Tirage horizontal à la poulie basse", image: "https://via.placeholder.com/64", description: "Renforce les dorsaux et milieu du dos.", series: 3, repetitions: 12 },
+        { nom: "Tractions pronation", image: "https://via.placeholder.com/64", description: "Travail complet du dos et biceps.", series: 4, repetitions: 10 },
+        { nom: "Curl biceps à la barre EZ", image: "https://via.placeholder.com/64", description: "Cible les biceps efficacement.", series: 3, repetitions: 12 },
+        { nom: "Extension triceps à la poulie haute (corde)", image: "https://via.placeholder.com/64", description: "Isolation des triceps.", series: 3, repetitions: 12 }
+      ],
+      Lower: [
+        { nom: "Squat à la barre libre", image: "https://via.placeholder.com/64", description: "Exercice de base pour les jambes.", series: 4, repetitions: 10 },
+        { nom: "Soulevé de terre jambes tendues avec haltères", image: "https://via.placeholder.com/64", description: "Travail des ischios-jambiers.", series: 4, repetitions: 10 },
+        { nom: "Fentes avec haltères", image: "https://via.placeholder.com/64", description: "Mobilité et équilibre pour jambes.", series: 3, repetitions: 12 },
+        { nom: "Mollets debout à la machine", image: "https://via.placeholder.com/64", description: "Cible les mollets.", series: 3, repetitions: 12 },
+        { nom: "Leg curl allongé", image: "https://via.placeholder.com/64", description: "Isolation des ischios.", series: 3, repetitions: 12 },
+        { nom: "Leg extension", image: "https://via.placeholder.com/64", description: "Cible le quadriceps.", series: 3, repetitions: 12 }
+      ]
+    },
+    "Arnold Split": {
+      Poitrine: [
+        { nom: "Développé couché aux haltères", image: "https://via.placeholder.com/64", description: "Travail global des pectoraux.", series: 4, repetitions: 10 },
+        { nom: "Développé incliné à la barre", image: "https://via.placeholder.com/64", description: "Cible le haut des pectoraux.", series: 4, repetitions: 8 },
+        { nom: "Écarté à la poulie vis-à-vis", image: "https://via.placeholder.com/64", description: "Isolation et étirement des pectoraux.", series: 3, repetitions: 15 },
+        { nom: "Dips", image: "https://via.placeholder.com/64", description: "Renforce pectoraux et triceps.", series: 3, repetitions: 12 }
+      ],
+      Dos: [
+        { nom: "Tirage horizontal à la poulie basse", image: "https://via.placeholder.com/64", description: "Travail l’épaisseur du dos.", series: 4, repetitions: 12 },
+        { nom: "Tirage vertical à la poulie (prise neutre)", image: "https://via.placeholder.com/64", description: "Renforce le dos de façon globale.", series: 4, repetitions: 10 },
+        { nom: "Rowing à la T-bar", image: "https://via.placeholder.com/64", description: "Accent sur le milieu du dos.", series: 3, repetitions: 12 },
+        { nom: "Extensions lombaires au banc", image: "https://via.placeholder.com/64", description: "Renforce les lombaires.", series: 3, repetitions: 15 }
+      ],
+      Jambes: [
+        { nom: "Squat à la barre libre", image: "https://via.placeholder.com/64", description: "Exercice fondamental jambes/fessiers.", series: 4, repetitions: 8 },
+        { nom: "Leg extension", image: "https://via.placeholder.com/64", description: "Isolation des quadriceps.", series: 3, repetitions: 15 },
+        { nom: "Leg curl allongé", image: "https://via.placeholder.com/64", description: "Travail des ischios-jambiers.", series: 3, repetitions: 15 },
+        { nom: "Mollets assis à la machine", image: "https://via.placeholder.com/64", description: "Cible soléaire et mollets.", series: 4, repetitions: 20 }
+      ],
+      Épaules: [
+        { nom: "Développé haltères assis", image: "https://via.placeholder.com/64", description: "Travail global des deltoïdes.", series: 4, repetitions: 10 },
+        { nom: "Élévations latérales aux haltères", image: "https://via.placeholder.com/64", description: "Isolation du deltoïde moyen.", series: 3, repetitions: 15 },
+        { nom: "Face pull à la poulie", image: "https://via.placeholder.com/64", description: "Renforce l’arrière des épaules.", series: 3, repetitions: 15 }
+      ],
+      Bras: [
+        { nom: "Curl biceps aux haltères", image: "https://via.placeholder.com/64", description: "Cible les biceps de manière équilibrée.", series: 3, repetitions: 12 },
+        { nom: "Curl marteau", image: "https://via.placeholder.com/64", description: "Renforce brachial et avant-bras.", series: 3, repetitions: 12 },
+        { nom: "Extension triceps à la poulie haute (corde)", image: "https://via.placeholder.com/64", description: "Travail précis des triceps.", series: 3, repetitions: 12 },
+        { nom: "Dips sur banc", image: "https://via.placeholder.com/64", description: "Renforcement général des triceps.", series: 3, repetitions: 15 }
+      ]
+    }
+  };
 
-
-  "Upper Lower": {
-    Upper: [
-      {
-        nom: "Développé couché à la barre",
-        image: "https://via.placeholder.com/64",
-        description: "Développé couché à la barre: Travail des pectoraux en force.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Développé militaire à la barre",
-        image: "https://via.placeholder.com/64",
-        description: "Développé militaire à la barre: Cible les épaules antérieures.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Tirage horizontal à la poulie basse",
-        image: "https://via.placeholder.com/64",
-        description: "Tirage horizontal à la poulie basse: Renforce les dorsaux et le milieu du dos.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Tractions pronation",
-        image: "https://via.placeholder.com/64",
-        description: "Tractions pronation: Travail complet du dos et biceps.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Curl biceps à la barre EZ",
-        image: "https://via.placeholder.com/64",
-        description: "Curl biceps à la barre EZ: Cible les biceps efficacement.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Extension triceps à la poulie haute (corde)",
-        image: "https://via.placeholder.com/64",
-        description: "Extension triceps à la poulie haute (corde): Isolation des triceps.",
-        series: 3,
-        repetitions: 12
-      }
-    ],
-    Lower: [
-      {
-        nom: "Squat à la barre libre",
-        image: "https://via.placeholder.com/64",
-        description: "Squat à la barre libre: Exercice de base pour les jambes.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Soulevé de terre jambes tendues avec haltères",
-        image: "https://via.placeholder.com/64",
-        description: "Soulevé de terre jambes tendues avec haltères: Travail des ischios-jambiers.",
-        series: 4,
-        repetitions: 10
-      },
-      {
-        nom: "Fentes avec haltères",
-        image: "https://via.placeholder.com/64",
-        description: "Fentes avec haltères: Mobilité et équilibre pour les jambes.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Mollets debout à la machine",
-        image: "https://via.placeholder.com/64",
-        description: "Mollets debout à la machine: Cible les mollets.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Leg curl allongé",
-        image: "https://via.placeholder.com/64",
-        description: "Leg curl allongé: Isolation des ischios.",
-        series: 3,
-        repetitions: 12
-      },
-      {
-        nom: "Leg extension",
-        image: "https://via.placeholder.com/64",
-        description: "Leg extension: Cible le quadriceps.",
-        series: 3,
-        repetitions: 12
-      }
-    ]
-  },
-
-  "Arnold Split": {
-  Poitrine: [
-    {
-      nom: "Développé couché aux haltères",
-      image: "https://via.placeholder.com/64",
-      description: "Développé couché aux haltères: Travail global des pectoraux.",
-      series: 4,
-      repetitions: 10
-    },
-    {
-      nom: "Développé incliné à la barre",
-      image: "https://via.placeholder.com/64",
-      description: "Développé incliné à la barre: Cible le haut des pectoraux.",
-      series: 4,
-      repetitions: 8
-    },
-    {
-      nom: "Écarté à la poulie vis-à-vis",
-      image: "https://via.placeholder.com/64",
-      description: "Écarté à la poulie vis-à-vis: Isolation et étirement des pectoraux.",
-      series: 3,
-      repetitions: 15
-    },
-    {
-      nom: "Dips",
-      image: "https://via.placeholder.com/64",
-      description: "Dips: Renforce les pectoraux et triceps.",
-      series: 3,
-      repetitions: 12
-    }
-  ],
-  Dos: [
-    {
-      nom: "Tirage horizontal à la poulie basse",
-      image: "https://via.placeholder.com/64",
-      description: "Tirage horizontal à la poulie basse: Travail l’épaisseur du dos.",
-      series: 4,
-      repetitions: 12
-    },
-    {
-      nom: "Tirage vertical à la poulie (prise neutre)",
-      image: "https://via.placeholder.com/64",
-      description: "Tirage vertical à la poulie (prise neutre): Renforce le dos de façon globale.",
-      series: 4,
-      repetitions: 10
-    },
-    {
-      nom: "Rowing à la T-bar",
-      image: "https://via.placeholder.com/64",
-      description: "Rowing à la T-bar: Accent sur le milieu du dos.",
-      series: 3,
-      repetitions: 12
-    },
-    {
-      nom: "Extensions lombaires au banc",
-      image: "https://via.placeholder.com/64",
-      description: "Extensions lombaires au banc: Renforce les lombaires.",
-      series: 3,
-      repetitions: 15
-    }
-  ],
-  Jambes: [
-    {
-      nom: "Squat à la barre libre",
-      image: "https://via.placeholder.com/64",
-      description: "Squat à la barre libre: Exercice fondamental jambes/fessiers.",
-      series: 4,
-      repetitions: 8
-    },
-    {
-      nom: "Leg extension",
-      image: "https://via.placeholder.com/64",
-      description: "Leg extension: Isolation des quadriceps.",
-      series: 3,
-      repetitions: 15
-    },
-    {
-      nom: "Leg curl allongé",
-      image: "https://via.placeholder.com/64",
-      description: "Leg curl allongé: Travail des ischios-jambiers.",
-      series: 3,
-      repetitions: 15
-    },
-    {
-      nom: "Mollets assis à la machine",
-      image: "https://via.placeholder.com/64",
-      description: "Mollets assis à la machine: Cible le soléaire et les mollets.",
-      series: 4,
-      repetitions: 20
-    }
-  ],
-  Épaules: [
-    {
-      nom: "Développé haltères assis",
-      image: "https://via.placeholder.com/64",
-      description: "Développé haltères assis: Travail global des deltoïdes.",
-      series: 4,
-      repetitions: 10
-    },
-    {
-      nom: "Élévations latérales aux haltères",
-      image: "https://via.placeholder.com/64",
-      description: "Élévations latérales aux haltères: Isolation du deltoïde moyen.",
-      series: 3,
-      repetitions: 15
-    },
-    {
-      nom: "Face pull à la poulie",
-      image: "https://via.placeholder.com/64",
-      description: "Face pull à la poulie: Renforce l’arrière des épaules.",
-      series: 3,
-      repetitions: 15
-    }
-  ],
-  Bras: [
-    {
-      nom: "Curl biceps aux haltères",
-      image: "https://via.placeholder.com/64",
-      description: "Curl biceps aux haltères: Cible les biceps de manière équilibrée.",
-      series: 3,
-      repetitions: 12
-    },
-    {
-      nom: "Curl marteau",
-      image: "https://via.placeholder.com/64",
-      description: "Curl marteau: Renforce le brachial et les avant-bras.",
-      series: 3,
-      repetitions: 12
-    },
-    {
-      nom: "Extension triceps à la poulie haute (corde)",
-      image: "https://via.placeholder.com/64",
-      description: "Extension triceps à la poulie haute (corde): Travail précis des triceps.",
-      series: 3,
-      repetitions: 12
-    },
-    {
-      nom: "Dips sur banc",
-      image: "https://via.placeholder.com/64",
-      description: "Dips sur banc: Renforcement général des triceps.",
-      series: 3,
-      repetitions: 15
-    }
-  ]
-}
-
-};
+  // Liste des splits disponibles (keys)
   const splitsDisponibles = Object.keys(programmes);
 
+  // Changer le plan et mettre à jour programme actif
   function changerPlan(nouveauPlan) {
     plan = nouveauPlan;
     programme = programmes[plan] || {};
   }
 
+  // Enregistrer une routine (un jour)
   async function enregistrer(jour, exercices, index) {
-  const nomRoutine = `Jour ${index + 1} de l'entraînement ${plan}`;
-  await enregistrerRoutine(nomRoutine, exercices);
-}
+    const nomRoutine = `Jour ${index + 1} de l'entraînement ${plan}`;
+    await enregistrerRoutine(nomRoutine, exercices);
+  }
 
-
-
-
+  // Au montage, initialise le plan selon l'utilisateur ou défaut
   onMount(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user?.entrainement && programmes[user.entrainement]) {
@@ -364,18 +105,18 @@
     loading = false;
   });
 
+  // Enregistre toutes les routines du programme actif
   async function toutEnregistrer() {
-  const jours = Object.entries(programme);
-  for (let i = 0; i < jours.length; i++) {
-    const [jour, exercices] = jours[i];
-    const nomRoutine = `Jour ${i + 1} de l'entraînement ${plan}`;
-    await enregistrerRoutine(nomRoutine, exercices);
+    const jours = Object.entries(programme);
+    for (let i = 0; i < jours.length; i++) {
+      const [jour, exercices] = jours[i];
+      const nomRoutine = `Jour ${i + 1} de l'entraînement ${plan}`;
+      await enregistrerRoutine(nomRoutine, exercices);
+    }
+    alert("Tous les entraînements ont été ajoutés !");
   }
-  alert("Tous les entraînements ont été ajoutés !");
-}
-
-
 </script>
+
 
 <style>
   .page-container {

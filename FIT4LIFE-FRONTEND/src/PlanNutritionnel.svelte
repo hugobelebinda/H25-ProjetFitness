@@ -5,9 +5,10 @@
   import Chart from "chart.js/auto";
 
   let currentUser;
-let caloriesInput = ""
-let erreurCalories = "";
+  let caloriesInput = "";
+  let erreurCalories = "";
 
+  // Champs de saisie repas perso
   let nomRepas = "";
   let kcal = "";
   let prot = "";
@@ -19,6 +20,7 @@ let erreurCalories = "";
   let repasDuJour = [];
   let caloriesBrulees = 0;
 
+  // Objectifs nutritionnels
   let objectifs = {
     calories: 0,
     proteines: 0,
@@ -26,12 +28,14 @@ let erreurCalories = "";
     lipides: 0
   };
 
+  // Statistiques calories
   let calories = {
     mangees: 0,
     brulees: 0,
     objectif: 0
   };
 
+  // Données macros pour graphiques
   let macros = [
     { nom: "Protéines", consommé: 0, objectif: 0, couleur: '#f2a900', emoji: '🍗' },
     { nom: "Glucides", consommé: 0, objectif: 0, couleur: '#18a888', emoji: '🍞' },
@@ -45,17 +49,15 @@ let erreurCalories = "";
   let showListeRepas = true;
   let showHistoriqueJour = true;
 
- 
+  $: currentUser = $user;
 
-$: currentUser = $user;
+  // Chargement initial des repas et journée nutritionnelle
   onMount(() => {
-
-    
     chargerRepas();
     chargerJournee(dateSelectionnee);
+  });
 
-    });
-
+  // Récupère repas personnalisés de l'utilisateur
   async function chargerRepas() {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -71,13 +73,14 @@ $: currentUser = $user;
     }
   }
 
+  // Charge la journée nutrition pour une date donnée
   async function chargerJournee(date) {
     caloriesInput = caloriesBrulees.toString();
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-          console.log(`📡 [frontend] ➤ Chargement de la journée nutritionnelle pour : ${date}`);
+      console.log(`Chargement journée nutrition pour : ${date}`);
       const res = await fetch(`http://localhost:4201/user/jour/${date}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -93,15 +96,9 @@ $: currentUser = $user;
         objectifs.glucides = data.journee.objectifGlucides;
         objectifs.lipides = data.journee.objectifLipides;
 
-         console.log(`📅 [frontend] Contenu de la journée ${date} :`);
-      console.log("  🔹 Repas :", repasDuJour);
-      console.log("  🔥 Calories brûlées :", caloriesBrulees);
-      console.log("  🎯 Objectifs :", objectifs);
-
+        console.log("Contenu journée :", repasDuJour);
       } else {
-
-         console.log(`📭 [frontend] Aucune journée trouvée pour ${date}, valeurs par défaut utilisées.`);
-
+        console.log("Aucune journée trouvée, valeurs par défaut utilisées.");
         repasDuJour = [];
         caloriesBrulees = 0;
         objectifs = {
@@ -118,6 +115,7 @@ $: currentUser = $user;
     }
   }
 
+  // Calcule calories et macros consommées
   function recalculerStats() {
     calories.mangees = repasDuJour.reduce((sum, r) => sum + r.calories, 0);
     calories.brulees = caloriesBrulees;
@@ -148,107 +146,106 @@ $: currentUser = $user;
     ];
     caloriesBrulees = calories.brulees;
 
-
     updateCharts();
   }
 
- function updateCharts() {
-  const ctxCalories = document.getElementById("caloriesChart");
-  if (ctxCalories) {
-    if (chartCaloriesInstance) {
-      chartCaloriesInstance.destroy();
-    }
+  // Met à jour les graphiques calories et macros
+  function updateCharts() {
+    const ctxCalories = document.getElementById("caloriesChart");
+    if (ctxCalories) {
+      if (chartCaloriesInstance) {
+        chartCaloriesInstance.destroy();
+      }
 
-    const mangees = calories.mangees;
-    const brulees = calories.brulees;
-    const objectif = calories.objectif;
+      const mangees = calories.mangees;
+      const brulees = calories.brulees;
+      const objectif = calories.objectif;
 
-    const net = Math.max(mangees - brulees, 0);
-    const depassement = Math.max(net - objectif, 0);
-const consomméesSansDepassement = Math.min(net, objectif);
-const restantes = Math.max(objectif - net, 0);
+      const net = Math.max(mangees - brulees, 0);
+      const depassement = Math.max(net - objectif, 0);
+      const consommeesSansDepassement = Math.min(net, objectif);
+      const restantes = Math.max(objectif - net, 0);
 
+      const data = depassement > 0
+        ? [consommeesSansDepassement, depassement]
+        : [net, restantes];
 
-    
-    const data = depassement > 0
-      ? [consomméesSansDepassement, depassement]
-      : [net, restantes];
+      const colors = depassement > 0
+        ? ['#1d86f2', '#e74c3c']
+        : ['#1d86f2', '#444'];
 
-    const colors = depassement > 0
-      ? ['#1d86f2', '#e74c3c']
-      : ['#1d86f2', '#444'];
+      chartCaloriesInstance = new Chart(ctxCalories, {
+        type: 'doughnut',
+        data: {
+          labels: ['Net consommé', 'Reste ou dépassement'],
+          datasets: [{
+            data,
+            backgroundColor: colors,
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '80%',
+          rotation: 0,
+          circumference: 360,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
 
-    chartCaloriesInstance = new Chart(ctxCalories, {
-      type: 'doughnut',
-      data: {
-        labels: ['Net consommé', 'Reste ou dépassement'],
-        datasets: [{
-          data,
-          backgroundColor: colors,
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '80%',
-        rotation: 0,
-        circumference: 360,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
+      const texteCentre = document.getElementById("caloriesCenterText");
+      if (texteCentre) {
+        if (depassement > 0) {
+          texteCentre.innerHTML = `
+            <h2 style="color:#e74c3c; font-size: 1rem; margin: 0;">Objectif dépassé de</h2>
+            <p style="color:#e74c3c; font-size: 1.6rem; font-weight: bold; margin: 4px 0 0;">${depassement} calories</p>
+          `;
+        } else {
+          texteCentre.innerHTML = `
+            <h2 style="font-size: 1.6rem; font-weight: bold; margin: 0;">${objectif - mangees + brulees}</h2>
+            <p style="font-size: 1rem; color: #ccc; margin: 4px 0 0;">Calories restantes</p>
+          `;
         }
       }
-    });
-
-    const texteCentre = document.getElementById("caloriesCenterText");
-    if (texteCentre) {
-      if (depassement > 0) {
-        texteCentre.innerHTML = `
-          <h2 style="color:#e74c3c; font-size: 1rem; margin: 0;">Objectif dépassé de</h2>
-          <p style="color:#e74c3c; font-size: 1.6rem; font-weight: bold; margin: 4px 0 0;">${depassement} calories</p>
-        `;
-      } else {
-        texteCentre.innerHTML = `
-          <h2 style="font-size: 1.6rem; font-weight: bold; margin: 0;">${objectif-mangees+brulees}</h2>
-          <p style="font-size: 1rem; color: #ccc; margin: 4px 0 0;">Calories restantes</p>
-        `;
-      }
     }
+
+    // Mise à jour des graphiques macros
+    macros.forEach((macro, index) => {
+      const ctx = document.getElementById(`macroChart-${index}`);
+      if (!ctx) return;
+
+      if (macroChartsInstances[index]) {
+        macroChartsInstances[index].destroy();
+      }
+
+      macroChartsInstances[index] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: [macro.nom, 'Reste'],
+          datasets: [{
+            data: [macro.consommé, Math.max(macro.objectif - macro.consommé, 0)],
+            backgroundColor: [macro.couleur, '#333'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '75%',
+          plugins: { legend: { display: false } }
+        }
+      });
+    });
   }
 
-  
-  macros.forEach((macro, index) => {
-    const ctx = document.getElementById(`macroChart-${index}`);
-    if (!ctx) return;
-
-    if (macroChartsInstances[index]) {
-      macroChartsInstances[index].destroy();
-    }
-
-    macroChartsInstances[index] = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: [macro.nom, 'Reste'],
-        datasets: [{
-          data: [macro.consommé, Math.max(macro.objectif - macro.consommé, 0)],
-          backgroundColor: [macro.couleur, '#333'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '75%',
-        plugins: { legend: { display: false } }
-      }
-    });
-  });
-}
-
-
+  // Ajoute un repas au jour actuel puis sauvegarde
   async function ajouterAuxRepasDuJour(repas) {
     repasDuJour = [...repasDuJour, repas];
     await sauvegarderJournee();
     recalculerStats();
   }
 
+  // Sauvegarde la journée actuelle sur backend
   async function sauvegarderJournee() {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -271,6 +268,7 @@ const restantes = Math.max(objectif - net, 0);
     }
   }
 
+  // Enregistre un repas personnalisé
   async function enregistrerRepasPerso() {
     if (!nomRepas || !kcal || !prot || !gluc || !lip) {
       alert("Remplis tous les champs.");
@@ -304,46 +302,46 @@ const restantes = Math.max(objectif - net, 0);
         throw new Error(data.message || "Erreur serveur");
       }
 
-      alert("Repas enregistré ✅");
+      alert("Repas enregistré");
       chargerRepas();
     } catch (err) {
       alert("Erreur : " + err.message);
     }
   }
 
+  // Supprime un repas du jour à un index donné
   function supprimerRepasDuJour(index) {
-  repasDuJour.splice(index, 1); // retire le repas à l'index donné
-  repasDuJour = [...repasDuJour]; // force la réactivité
-  recalculerStats();
-  sauvegarderJournee();
-}
-
-async function supprimerRepas(id) {
-  const token = localStorage.getItem("token");
-  if (!token) return;
-
-  try {
-    const res = await fetch(`http://localhost:4201/user/repas/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message || "Erreur serveur");
-    }
-
-    // Recharger la liste après suppression
-    await chargerRepas();
-  } catch (err) {
-    console.error("Erreur suppression repas :", err);
+    repasDuJour.splice(index, 1); // supprime le repas
+    repasDuJour = [...repasDuJour]; // force la réactivité
+    recalculerStats();
+    sauvegarderJournee();
   }
-}
 
+  // Supprime un repas personnalisé par id
+  async function supprimerRepas(id) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
+    try {
+      const res = await fetch(`http://localhost:4201/user/repas/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Erreur serveur");
+      }
+
+      await chargerRepas();
+    } catch (err) {
+      console.error("Erreur suppression repas :", err);
+    }
+  }
 </script>
+
 
 
 

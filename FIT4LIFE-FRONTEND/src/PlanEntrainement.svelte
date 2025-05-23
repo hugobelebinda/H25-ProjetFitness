@@ -4,20 +4,21 @@
   import { onMount } from "svelte";
   import { logout, user } from "./common/auth";
 
-  let planIA = "";
-  let loading = false;
-  let entrainements = [];
-  let isConnected = false;
-  let entrainementSelectionne = null;
-  let poidsUnit = "kg";
-  let suiviDate = new Date().toISOString().split("T")[0];
-  let currentUser = $user;
-  
+  let planIA = "";                  // texte markdown du plan IA (non utilisé ici)
+  let loading = false;              // état chargement
+  let entrainements = [];           // liste des entraînements utilisateur
+  let isConnected = false;          // flag connexion
+  let entrainementSelectionne = null; // entraînement en cours de suivi
+  let poidsUnit = "kg";             // unité poids pour suivi
+  let suiviDate = new Date().toISOString().split("T")[0]; // date suivi au format YYYY-MM-DD
+  let currentUser = $user;          // utilisateur connecté
 
+  // Parse du markdown en HTML
   function renderMarkdown(text) {
     return marked.parse(text);
   }
 
+  // Au montage, vérifie token et charge entraînements
   onMount(() => {
     const token = localStorage.getItem("token");
     isConnected = !!token;
@@ -29,6 +30,7 @@
     }
     chargerEntrainements();
 
+    // Charge entraînements (redondant ici avec fonction chargerEntrainements)
     fetch("http://localhost:4201/user/entrainement", {
       headers: {
         Authorization: `Bearer ${token}`
@@ -47,6 +49,7 @@
     });
   });
 
+  // Génère un plan via IA et sauvegarde en base
   async function genererAvecIA() {
     loading = true;
     const token = localStorage.getItem("token");
@@ -68,6 +71,7 @@
         throw new Error("Format de données IA invalide");
       }
 
+      // Sauvegarde chaque plan généré
       for (const plan of data.entrainements) {
         if (!plan.exercices || plan.exercices.length === 0) continue; 
         const saveRes = await fetch("http://localhost:4201/user/entrainement", {
@@ -96,6 +100,7 @@
     }
   }
 
+  // Supprime un entraînement après confirmation
   async function supprimerEntrainement(id) {
     const confirmation = confirm("Êtes-vous sûr de vouloir supprimer cet entraînement ?");
     if (!confirmation) return;
@@ -113,6 +118,7 @@
 
       if (!res.ok) throw new Error("Échec de la suppression");
 
+      // Mise à jour locale après suppression
       entrainements = entrainements.filter(e => e.id !== id);
     } catch (err) {
       console.error(err);
@@ -120,6 +126,7 @@
     }
   }
 
+  // Prépare modification : stocke dans localStorage et redirige vers formulaire
   function modifierEntrainement(entrainement) {
     localStorage.setItem("routine_a_modifier", JSON.stringify({
       id: entrainement.id,
@@ -129,6 +136,7 @@
     navigate("/ajout-exercice");
   }
 
+  // Ouvre formulaire suivi avec détails d'un entraînement
   function ouvrirFormulaire(entrainementId, titre, contenu) {
     entrainementSelectionne = {
       id: entrainementId,
@@ -143,26 +151,28 @@
       })
     };
   }
+
+  // Charge la liste des entraînements depuis backend
   async function chargerEntrainements() {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  try {
-    const res = await fetch("http://localhost:4201/user/entrainement", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    try {
+      const res = await fetch("http://localhost:4201/user/entrainement", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    const data = await res.json();
-    entrainements = data.map((e, index) => ({
-      id: e._id || index,
-      titre: e.nom,
-      contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
-    }));
-  } catch (err) {
-    console.error("Erreur lors du chargement :", err);
+      const data = await res.json();
+      entrainements = data.map((e, index) => ({
+        id: e._id || index,
+        titre: e.nom,
+        contenu: e.exercices.map(ex => `- ${ex.nom} : ${ex.series} séries x ${ex.repetitions} reps`).join("\n")
+      }));
+    } catch (err) {
+      console.error("Erreur lors du chargement :", err);
+    }
   }
-}
 
-
+  // Envoie un suivi d'entraînement au backend
   async function envoyerSuivi() {
     const token = localStorage.getItem("token");
 
@@ -191,7 +201,7 @@
 
       if (!res.ok) throw new Error("Erreur serveur");
 
-      alert("Suivi enregistré ");
+      alert("Suivi enregistré");
       entrainementSelectionne = null;
     } catch (err) {
       console.error(err);
@@ -199,6 +209,7 @@
     }
   }
 
+  // Déconnexion utilisateur et redirection
   function seDeconnecter() {
     logout();
     navigate("/connexion");

@@ -1,30 +1,27 @@
 <script>
-  import { navigate } from 'svelte-routing';
-  import { get } from "svelte/store";
+  import { onMount, tick } from 'svelte';
   import { user } from './common/auth';
-  import { onMount, afterUpdate, tick } from 'svelte';
   import Chart from 'chart.js/auto';
-  
 
-
-let donneesSemaine = [];
-let chartMacrosInstance;
-let lastPoidsHash = "";
+  let donneesSemaine = [];
+  let chartMacrosInstance;
+  let lastPoidsHash = "";
   let currentUser;
   let poidsChartInstance;
-let showPoidsChart = false; 
-let records1RM = {
-  "Développé couché à la barre": { absolu: null, dernier: null },
-  "Squat à la barre libre": { absolu: null, dernier: null },
-  "Soulevé de terre à la barre": { absolu: null, dernier: null },
-};
-let loading1RM = true;
-
+  let showPoidsChart = false; 
+  let records1RM = {
+    "Développé couché à la barre": { absolu: null, dernier: null },
+    "Squat à la barre libre": { absolu: null, dernier: null },
+    "Soulevé de terre à la barre": { absolu: null, dernier: null },
+  };
+  let loading1RM = true;
 
   $: currentUser = $user;
+
   let datePoids = new Date().toISOString().slice(0, 10);
   let editingPoids = false;
-  let nouveauPoids = $user?.poids || null;
+  let nouveauPoids = currentUser?.poids || null;
+
   let nutriments = [
     { nom: 'Protéines', consommé: currentUser?.proteines || 0 },
     { nom: 'Glucides', consommé: currentUser?.glucides || 0 },
@@ -35,10 +32,11 @@ let loading1RM = true;
   let filtres = {};
   let chartInstance;
   let showChart = false;
- let loadingUser = true;
-  $: loadingUser = !$user || !$user.poidsHistorique; 
+  let loadingUser = !$user || !$user.poidsHistorique;
+
+  // Chargement des exercices et données semaine
   onMount(async () => {
-    chargerSemaine();
+    await chargerSemaine();
     try {
       const res = await fetch("http://localhost:4201/user/exercices");
       const data = await res.json();
@@ -60,63 +58,56 @@ let loading1RM = true;
     }
   });
 
-async function fetchAllRecords1RM() {
-  loading1RM = true;
-  const exercices = [
-    "Développé couché à la barre",
-    "Squat à la barre libre",
-    "Soulevé de terre à la barre",
-  ];
-  const token = localStorage.getItem("token");
-  try {
-    for (const ex of exercices) {
-      const encoded = encodeURIComponent(ex);
-      const res = await fetch(
-        `http://localhost:4201/user/suivi/performance/${encoded}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+  // Chargement parallèle des records 1RM
+  async function fetchAllRecords1RM() {
+    loading1RM = true;
+    const exercices = [
+      "Développé couché à la barre",
+      "Squat à la barre libre",
+      "Soulevé de terre à la barre",
+    ];
+    const token = localStorage.getItem("token");
+    try {
+      const promises = exercices.map(async (ex) => {
+        const encoded = encodeURIComponent(ex);
+        const res = await fetch(`http://localhost:4201/user/suivi/performance/${encoded}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          records1RM[ex] = {
+            absolu: data.recordAbsolu1RM ?? null,
+            dernier: data.dernier1RM ?? null,
+          };
+        } else {
+          records1RM[ex] = { absolu: null, dernier: null };
         }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        records1RM[ex] = {
-          absolu: data.recordAbsolu1RM ?? null,
-          dernier: data.dernier1RM ?? null,
-        };
-      } else {
-        records1RM[ex] = { absolu: null, dernier: null };
-      }
+      });
+      await Promise.all(promises);
+    } catch (e) {
+      exercices.forEach(ex => records1RM[ex] = { absolu: null, dernier: null });
     }
-  } catch (e) {
-    for (const ex of exercices)
-      records1RM[ex] = { absolu: null, dernier: null };
+    loading1RM = false;
   }
-  loading1RM = false;
-}
 
-onMount(() => {
-  fetchAllRecords1RM();
-});
+  onMount(() => {
+    fetchAllRecords1RM();
+  });
 
   async function changerPoids() {
-    const aujourdHui = new Date().toISOString().slice(0, 10);
-
     if (!currentUser || !currentUser._id) {
       alert("Utilisateur non connecté.");
       return;
     }
-
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Token non trouvé, veuillez vous reconnecter.");
       return;
     }
-
     if (!nouveauPoids || isNaN(nouveauPoids)) {
       alert('Veuillez entrer un poids valide.');
       return;
     }
-
     const body = {
       field: "poids",
       value: parseInt(nouveauPoids),
@@ -134,19 +125,11 @@ onMount(() => {
       });
 
       if (res.ok) {
-  const data = await res.json();
-  console.log("User reçu du backend :", data.user); 
-  console.log("Réponse du backend :", data);
-
-user.set(data.user);
-console.log("data.user", data.user);
-console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
-
-
-  editingPoids = false;
-  showPoidsChart = true;
-}
- else {
+        const data = await res.json();
+        user.set(data.user);
+        editingPoids = false;
+        showPoidsChart = true;
+      } else {
         const errorText = await res.text();
         alert("Erreur : " + errorText);
       }
@@ -191,18 +174,18 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
     });
   }
 
+  // Détecte changement dans historique poids pour redraw chart
   $: if (
-  showPoidsChart &&
-  $user?.poidsHistorique &&
-  $user.poidsHistorique.length > 0
-) {
-  const poidsHash = $user.poidsHistorique.map(p => `${p.date}:${p.poids}`).join('|');
-  if (poidsHash !== lastPoidsHash) {
-    lastPoidsHash = poidsHash;
-    tick().then(() => drawPoidsChart());
+    showPoidsChart &&
+    currentUser?.poidsHistorique &&
+    currentUser.poidsHistorique.length > 0
+  ) {
+    const poidsHash = currentUser.poidsHistorique.map(p => `${p.date}:${p.poids}`).join('|');
+    if (poidsHash !== lastPoidsHash) {
+      lastPoidsHash = poidsHash;
+      tick().then(drawPoidsChart);
+    }
   }
-}
-
 
   function dateLocaleAujourdHui() {
     const today = new Date();
@@ -211,62 +194,60 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
   }
 
   async function fetchPerformance(exercice) {
-  if (!exercice) return;
+    if (!exercice) return;
 
-  try {
-    const encoded = encodeURIComponent(exercice);
-    const url = `http://localhost:4201/user/suivi/performance/${encoded}`;
-    const token = localStorage.getItem("token");
+    try {
+      const encoded = encodeURIComponent(exercice);
+      const url = `http://localhost:4201/user/suivi/performance/${encoded}`;
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    if (res.ok) {
-      const perf = await res.json();
-      showChart = true;
-   
-      drawPerformanceChart(perf.progression || []);
-    } else {
+      if (res.ok) {
+        const perf = await res.json();
+        showChart = true;
+        drawPerformanceChart(perf.progression || []);
+      } else {
+        showChart = false;
+      }
+    } catch (err) {
       showChart = false;
     }
-  } catch (err) {
-    showChart = false;
   }
-}
-
 
   function drawPerformanceChart(progression) {
-  setTimeout(() => {
-    const ctx = document.getElementById('perfChart');
-    if (!ctx) return;
+    setTimeout(() => {
+      const ctx = document.getElementById('perfChart');
+      if (!ctx) return;
 
-    if (chartInstance) chartInstance.destroy();
+      if (chartInstance) chartInstance.destroy();
 
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: progression.map(p => new Date(p.date).toLocaleDateString()),
-        datasets: [{
-          label: 'Charge moyenne (kg)',
-          data: progression.map(p => p.chargeMoyenne),
-          borderColor: '#18a888',
-          backgroundColor: 'rgba(24,168,136,0.2)',
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: 'white' } } },
-        scales: {
-          x: { ticks: { color: 'white' } },
-          y: { ticks: { color: 'white' } }
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: progression.map(p => new Date(p.date).toLocaleDateString()),
+          datasets: [{
+            label: 'Charge moyenne (kg)',
+            data: progression.map(p => p.chargeMoyenne),
+            borderColor: '#18a888',
+            backgroundColor: 'rgba(24,168,136,0.2)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: 'white' } } },
+          scales: {
+            x: { ticks: { color: 'white' } },
+            y: { ticks: { color: 'white' } }
+          }
         }
-      }
-    });
-  }, 50);
-}
+      });
+    }, 50);
+  }
 
   function choisirExercice(nom) {
     fetchPerformance(nom);
@@ -276,134 +257,129 @@ console.log("data.dateEstimeeObjectif", data.dateEstimeeObjectif);
   }
 
   async function chargerSemaine() {
-  if (!semaineSelectionnee) return;
-  const token = localStorage.getItem("token");
-  if (!token) return;
+    if (!semaineSelectionnee) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  const [year, week] = semaineSelectionnee.split("-W");
+    const [year, week] = semaineSelectionnee.split("-W");
 
-  try {
-    const res = await fetch(`http://localhost:4201/user/journees/semaine/${year}/${week}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    try {
+      const res = await fetch(`http://localhost:4201/user/journees/semaine/${year}/${week}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    const data = await res.json(); // [{ date, proteines, glucides, lipides }]
-    if (!Array.isArray(data)) return;
+      const data = await res.json(); // [{ date, proteines, glucides, lipides }]
+      if (!Array.isArray(data)) return;
 
-    donneesSemaine = data;
-    await afficherGraphiqueMacros();
-    afficherGraphiqueMacros();
-  } catch (err) {
-    console.error("Erreur chargement semaine :", err);
+      donneesSemaine = data;
+      await afficherGraphiqueMacros();
+    } catch (err) {
+      console.error("Erreur chargement semaine :", err);
+    }
   }
-}
 
+  async function afficherGraphiqueMacros() {
+    await tick(); // S'assurer que le canvas est monté
 
-async function afficherGraphiqueMacros() {
-  await tick(); // S'assurer que le canvas est monté
+    const ctx = document.getElementById("macroCaloriesChart");
+    if (!ctx) return;
 
-  const ctx = document.getElementById("macroCaloriesChart");
-  if (!ctx) return;
+    if (chartMacrosInstance) chartMacrosInstance.destroy();
 
-  if (chartMacrosInstance) chartMacrosInstance.destroy();
+    const labels = donneesSemaine.map(j => j.date).concat("Moy");
 
-  // Pas de tri. On respecte l'ordre exact reçu du backend
-  const labels = donneesSemaine.map(j => j.date).concat("Moy");
+    const prot = donneesSemaine.map(j => j.proteines * 4);
+    const gluc = donneesSemaine.map(j => j.glucides * 4);
+    const lip = donneesSemaine.map(j => j.lipides * 9);
 
-  const prot = donneesSemaine.map(j => j.proteines * 4);
-  const gluc = donneesSemaine.map(j => j.glucides * 4);
-  const lip = donneesSemaine.map(j => j.lipides * 9);
+    const moy = {
+      prot: Math.round(prot.reduce((a, b) => a + b, 0) / prot.length),
+      gluc: Math.round(gluc.reduce((a, b) => a + b, 0) / gluc.length),
+      lip: Math.round(lip.reduce((a, b) => a + b, 0) / lip.length)
+    };
 
-  const moy = {
-    prot: Math.round(prot.reduce((a, b) => a + b, 0) / prot.length),
-    gluc: Math.round(gluc.reduce((a, b) => a + b, 0) / gluc.length),
-    lip: Math.round(lip.reduce((a, b) => a + b, 0) / lip.length)
-  };
+    prot.push(moy.prot);
+    gluc.push(moy.gluc);
+    lip.push(moy.lip);
 
-  prot.push(moy.prot);
-  gluc.push(moy.gluc);
-  lip.push(moy.lip);
+    const debut = donneesSemaine[0]?.date ?? "...";
+    const fin = donneesSemaine[donneesSemaine.length - 1]?.date ?? "...";
 
-  const debut = donneesSemaine[0]?.date ?? "...";
-  const fin = donneesSemaine[donneesSemaine.length - 1]?.date ?? "...";
+    const titreGraphique = `Données du ${debut} au ${fin}`;
 
-  const titreGraphique = `Données du ${debut} au ${fin}`;
-
-  chartMacrosInstance = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        { label: "Lipides", data: lip, backgroundColor: "#2ecc71", stack: "stack1" },
-        { label: "Glucides", data: gluc, backgroundColor: "#e74c3c", stack: "stack1" },
-        { label: "Protéines", data: prot, backgroundColor: "#3498db", stack: "stack1" }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: titreGraphique,
-          color: "white",
-          font: { size: 18, weight: "bold" },
-          padding: { top: 10, bottom: 20 }
-        },
-        legend: {
-          labels: { color: "white", font: { size: 13 } }
-        }
+    chartMacrosInstance = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          { label: "Lipides", data: lip, backgroundColor: "#2ecc71", stack: "stack1" },
+          { label: "Glucides", data: gluc, backgroundColor: "#e74c3c", stack: "stack1" },
+          { label: "Protéines", data: prot, backgroundColor: "#3498db", stack: "stack1" }
+        ]
       },
-      scales: {
-        x: {
-          stacked: true,
-          ticks: {
-            color: "white",
-            font: { size: 12 },
-            callback: (val, index) => labels[index] // Affiche la date brute stockée
-          },
-          grid: { color: "#333" }
-        },
-        y: {
-          stacked: true,
-          ticks: {
-            color: "white",
-            font: { size: 12 },
-            callback: v => v + " kcal"
-          },
-          grid: { color: "#333" },
+      options: {
+        responsive: true,
+        plugins: {
           title: {
             display: true,
-            text: "Calories (kcal)",
+            text: titreGraphique,
             color: "white",
-            font: { size: 14 }
+            font: { size: 18, weight: "bold" },
+            padding: { top: 10, bottom: 20 }
+          },
+          legend: {
+            labels: { color: "white", font: { size: 13 } }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              color: "white",
+              font: { size: 12 },
+              callback: (val, index) => labels[index]
+            },
+            grid: { color: "#333" }
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              color: "white",
+              font: { size: 12 },
+              callback: v => v + " kcal"
+            },
+            grid: { color: "#333" },
+            title: {
+              display: true,
+              text: "Calories (kcal)",
+              color: "white",
+              font: { size: 14 }
+            }
           }
         }
       }
-    }
-  });
-}
+    });
+  }
 
+  function getISOWeek(date) {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7; // 0 (dim) -> 6, 1 (lun) -> 0 ...
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const diff = target - firstThursday;
+    return Math.ceil((diff / (7 * 24 * 60 * 60 * 1000)) + 1);
+  }
 
+  function getSemaineCouranteISO() {
+    const today = new Date();
+    const week = getISOWeek(today);
+    const year = today.getFullYear();
+    return `${year}-W${week.toString().padStart(2, "0")}`;
+  }
 
-
-function getISOWeek(date) {
-  const target = new Date(date.valueOf());
-  const dayNr = (date.getDay() + 6) % 7; // 0 (dim) -> 6, 1 (lun) -> 0 ...
-  target.setDate(target.getDate() - dayNr + 3);
-  const firstThursday = new Date(target.getFullYear(), 0, 4);
-  const diff = target - firstThursday;
-  return Math.ceil((diff / (7 * 24 * 60 * 60 * 1000)) + 1);
-}
-
-function getSemaineCouranteISO() {
-  const today = new Date();
-  const week = getISOWeek(today);
-  const year = today.getFullYear();
-  return `${year}-W${week.toString().padStart(2, "0")}`;
-}
-
-let semaineSelectionnee = getSemaineCouranteISO();
+  let semaineSelectionnee = getSemaineCouranteISO();
 </script>
+
 
 
 <style>
@@ -628,9 +604,6 @@ let semaineSelectionnee = getSemaineCouranteISO();
     margin-top: 6px;
   }
 </style>
-<!--{#if currentUser}
-  <pre>{JSON.stringify(currentUser, null, 2)}</pre>
-{/if} -->
 
 
 <div class="suivi-container">

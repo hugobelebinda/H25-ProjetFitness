@@ -2,6 +2,7 @@
   import { navigate } from "svelte-routing";
   import { Link } from "svelte-routing";
 
+  // Variables formulaire inscription
   let nom = "";
   let nomFamille = "";
   let username = "";
@@ -9,7 +10,9 @@
   let password = "";
   let message = "";
 
+  // Fonction d'inscription appelant le backend
   async function inscrire() {
+    // validation simple des champs
     if (!nom || !nomFamille || !username || !email || !password) {
       alert("Veuillez remplir tous les champs.");
       return;
@@ -33,22 +36,24 @@
       const data = await response.json();
 
       if (response.ok) {
-        message = "✅ Inscription réussie ! Redirection en cours...";
+        message = "Inscription réussie ! Redirection en cours...";
         console.log("Réponse du backend :", data);
 
+        // redirection vers page connexion 
         setTimeout(() => {
           navigate("/connexion");
         }, 1500);
       } else {
-        message = `❌ Erreur : ${data.message || "Une erreur est survenue."}`;
+        message = `Erreur : ${data.message || "Une erreur est survenue."}`;
         console.error(data);
       }
     } catch (error) {
-      message = "❌ Erreur réseau, réessayez plus tard.";
+      message = "Erreur réseau, réessayez plus tard.";
       console.error("Erreur réseau :", error);
     }
   }
 </script>
+
 
 <style>
   .page-background {

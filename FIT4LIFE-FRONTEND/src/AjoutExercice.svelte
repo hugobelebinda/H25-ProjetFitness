@@ -2,12 +2,13 @@
   import { onMount } from "svelte";
   import { navigate } from "svelte-routing";
 
-  let groupesMusculaires = [];
-  let nomRoutine = "";
-  let exercices = [];
-  let routineId = null;
-  let filtres = {}; 
+  let groupesMusculaires = []; // groupes d'exercices récupérés
+  let nomRoutine = "";          // nom de la routine à créer/modifier
+  let exercices = [];           // liste des exercices de la routine
+  let routineId = null;         // id de la routine si modification
+  let filtres = {};             // filtres potentiels (non utilisé ici)
 
+  // Ajoute un exercice vide avec valeurs par défaut
   function ajouterExercice() {
     exercices = [
       ...exercices,
@@ -19,15 +20,19 @@
     ];
   }
 
+  // Supprime un exercice selon son index
   function supprimerExercice(index) {
     exercices = exercices.filter((_, i) => i !== index);
   }
 
+  // Au montage du composant, charge la liste des exercices et éventuellement la routine à modifier
   onMount(async () => {
     try {
+      // récupère les exercices depuis backend
       const res = await fetch("http://localhost:4201/user/exercices");
       const data = await res.json();
 
+      // groupe les exercices par groupe musculaire
       const map = new Map();
       data.data.forEach((ex) => {
         if (!map.has(ex.groupeMusculaire)) {
@@ -36,16 +41,19 @@
         map.get(ex.groupeMusculaire).push(ex);
       });
 
+      // transforme en tableau {nom, exercices}
       groupesMusculaires = Array.from(map.entries()).map(([nom, exercices]) => ({
         nom,
         exercices
       }));
 
+      // charge la routine à modifier si présente dans localStorage
       const routineExistante = localStorage.getItem("routine_a_modifier");
       if (routineExistante) {
         const parsed = JSON.parse(routineExistante);
         routineId = parsed.id;
         nomRoutine = parsed.titre;
+        // parse la description textuelle en objets exercices
         exercices = parsed.contenu.split("\n").map(line => {
           const match = line.match(/- (.+?) : (\d+) séries x (\d+) reps/);
           if (match) {
@@ -65,7 +73,9 @@
     }
   });
 
+  // Enregistre ou met à jour la routine via API
   async function enregistrer() {
+    // validation des champs
     if (!nomRoutine || exercices.length === 0 || exercices.some(e => !e.nom || !e.series || !e.repetitions)) {
       alert("Complétez tous les champs avant de valider la routine.");
       return;
@@ -73,8 +83,8 @@
 
     const token = localStorage.getItem("token");
     const url = routineId
-      ? `http://localhost:4201/user/entrainement/${routineId}`
-      : "http://localhost:4201/user/entrainement";
+      ? `http://localhost:4201/user/entrainement/${routineId}` // PUT si modif
+      : "http://localhost:4201/user/entrainement";            // POST sinon
 
     const method = routineId ? "PUT" : "POST";
 
@@ -96,13 +106,14 @@
       if (!res.ok) throw new Error("Erreur lors de l'enregistrement");
 
       alert(routineId ? "Routine mise à jour ✅" : "Routine créée ✅");
-      navigate("/plan-entrainement");
+      navigate("/plan-entrainement"); // redirection après succès
     } catch (err) {
       console.error(err);
       alert("Une erreur est survenue lors de l'enregistrement.");
     }
   }
 </script>
+
 
 <style>
 

@@ -19,7 +19,7 @@ export interface IUser extends Document {
 
     //ajout
     age?: number; 
-    niveauActivite?: number; // 1.2 à 2.5 ou MET moyn
+    niveauActivite?: number;
 
     //nutrition
     calories?: number;

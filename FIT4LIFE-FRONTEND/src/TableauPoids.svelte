@@ -34,29 +34,17 @@
       options: {
         responsive: true,
         scales: {
-          x: {
-            ticks: { color: '#ccc' },
-            grid: { color: '#333' }
-          },
-          y: {
-            beginAtZero: false,
-            ticks: { color: '#ccc' },
-            grid: { color: '#333' }
-          }
+          x: { ticks: { color: '#ccc' }, grid: { color: '#333' } },
+          y: { beginAtZero: false, ticks: { color: '#ccc' }, grid: { color: '#333' } }
         },
         plugins: {
-          legend: {
-            labels: {
-              color: '#18a888',
-              font: { size: 14 }
-            }
-          }
+          legend: { labels: { color: '#18a888', font: { size: 14 } } }
         }
       }
     });
   });
 
-  // 💥 Bloc réactif pour actualiser le graphique si historique change
+  // Met à jour le graphique si l'historique change
   $: if (chart && historique && historique.length > 0) {
     const sorted = [...historique].sort((a, b) => new Date(a.date) - new Date(b.date));
     chart.data.labels = sorted.map(e => new Date(e.date).toLocaleDateString());

@@ -1,123 +1,134 @@
 <script>
+  import { navigate } from "svelte-routing";
+  import { get } from "svelte/store";
+  import { user } from "./common/auth";
 
-import { navigate } from "svelte-routing";
-import { get } from "svelte/store";
-import { user } from "./common/auth";
-const currentUser = get(user);
+  // récupère l'utilisateur courant (snapshot)
+  const currentUser = get(user);
 
-const estReevaluation = currentUser && (currentUser.frequence || currentUser.objectif || currentUser.entrainement);
+  // indique si on est en mode réévaluation (si certains champs sont déjà remplis)
+  const estReevaluation = currentUser && (currentUser.frequence || currentUser.objectif || currentUser.entrainement);
 
-let objectif = estReevaluation && currentUser.objectif ? currentUser.objectif : "Perdre du poids";
-let age = estReevaluation && currentUser.age ? currentUser.age : 20;
-let experience = estReevaluation && currentUser.experience ? currentUser.experience : "Débutant";
-let entrainement = estReevaluation && currentUser.entrainement ? currentUser.entrainement : "Push Pull Legs";
-let poidsActuel = estReevaluation && currentUser.poids ? `${currentUser.poids} kg` : "70 kg";
-let niveauActivite = estReevaluation && currentUser.niveauActivite ? currentUser.niveauActivite : 1.55;
-let frequence = estReevaluation && currentUser.frequence ? currentUser.frequence : "3 fois par semaine";
-let planNutrition = estReevaluation && currentUser.planNutrition ? currentUser.planNutrition : "Aucun";
-let sexe = estReevaluation && currentUser.sexe ? currentUser.sexe : "Homme";
-let taille = estReevaluation && currentUser.taille ? currentUser.taille : 170;
+  // initialisation des variables avec valeurs existantes ou par défaut
+  let objectif = estReevaluation && currentUser.objectif ? currentUser.objectif : "Perdre du poids";
+  let age = estReevaluation && currentUser.age ? currentUser.age : 20;
+  let experience = estReevaluation && currentUser.experience ? currentUser.experience : "Débutant";
+  let entrainement = estReevaluation && currentUser.entrainement ? currentUser.entrainement : "Push Pull Legs";
+  let poidsActuel = estReevaluation && currentUser.poids ? `${currentUser.poids} kg` : "70 kg";
+  let niveauActivite = estReevaluation && currentUser.niveauActivite ? currentUser.niveauActivite : 1.55;
+  let frequence = estReevaluation && currentUser.frequence ? currentUser.frequence : "3 fois par semaine";
+  let planNutrition = estReevaluation && currentUser.planNutrition ? currentUser.planNutrition : "Aucun";
+  let sexe = estReevaluation && currentUser.sexe ? currentUser.sexe : "Homme";
+  let taille = estReevaluation && currentUser.taille ? currentUser.taille : 170;
 
-$: poidsObjectif = (
-  estReevaluation && currentUser.poidsObjectif
-    ? `${currentUser.poidsObjectif} kg`
-    : (objectif === "Gagner du muscle"
-        ? "76 kg"
-        : (objectif === "Perdre du poids"
-            ? "65 kg"
-            : poidsActuel 
-          )
-      )
-);
+  // poidsObjectif réactif en fonction de l'objectif choisi et poids actuel
+  $: poidsObjectif = (
+    estReevaluation && currentUser.poidsObjectif
+      ? `${currentUser.poidsObjectif} kg`
+      : (objectif === "Gagner du muscle"
+          ? "76 kg"
+          : (objectif === "Perdre du poids"
+              ? "65 kg"
+              : poidsActuel 
+            )
+        )
+  );
 
-let joursDisponibles = [];
-const ages = Array.from({ length: 150 }, (_, i) => i + 1);
-const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-const objectifs = ["Perdre du poids", "Gagner du muscle", "Garder la forme"];
-const experiences = ["Débutant", "Intermédiaire", "Avancé"];
-const entrainements = ["Push Pull Legs", "Full Body", "Split d'un muscle par jour", "Arnold Split", "Arnold X PushPullLeg"];
-const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
-const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
-const niveauxActivite = [
-  { label: "Repos (aucune activité)", value: 1.2 },
-  { label: "Léger (1-3 jours/semaine)", value: 1.375 },
-  { label: "Modéré (3-5 jours/semaine)", value: 1.55 },
-  { label: "Intense (6-7 jours/semaine)", value: 1.725 },
-  { label: "Très intense (2x/jour ou travail physique)", value: 1.9 }
-];
+  let joursDisponibles = []; // jours où utilisateur est dispo
 
-function toggleJour(jour) {
-  if (joursDisponibles.includes(jour)) {
-    joursDisponibles = joursDisponibles.filter(j => j !== jour);
-  } else {
-    joursDisponibles = [...joursDisponibles, jour];
-  }
-}
+  // listes statiques pour inputs (ages, jours, objectifs, etc.)
+  const ages = Array.from({ length: 150 }, (_, i) => i + 1);
+  const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+  const objectifs = ["Perdre du poids", "Gagner du muscle", "Garder la forme"];
+  const experiences = ["Débutant", "Intermédiaire", "Avancé"];
+  const entrainements = ["Push Pull Legs", "Full Body", "Split d'un muscle par jour", "Arnold Split", "Arnold X PushPullLeg"];
+  const frequences = ["1 fois par semaine", "2 fois par semaine", "3 fois par semaine", "4 fois par semaine", "5 fois par semaine", "6 fois par semaine"];
+  const poids = Array.from({ length: 171 }, (_, i) => `${30 + i} kg`);
+  const niveauxActivite = [
+    { label: "Repos (aucune activité)", value: 1.2 },
+    { label: "Léger (1-3 jours/semaine)", value: 1.375 },
+    { label: "Modéré (3-5 jours/semaine)", value: 1.55 },
+    { label: "Intense (6-7 jours/semaine)", value: 1.725 },
+    { label: "Très intense (2x/jour ou travail physique)", value: 1.9 }
+  ];
 
-async function soumettreEvaluation() {
-  if (!currentUser || !currentUser._id) {
-    alert("Utilisateur non connecté.");
-    return;
-  }
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Token non trouvé, veuillez vous reconnecter.");
-    return;
-  }
-
-  const dataToSend = {
-    poids: parseInt(poidsActuel),
-    age: parseInt(age),
-    dispo: joursDisponibles.join(', '),
-    objectif,
-    experience,
-    entrainement,
-    frequence,
-    planNutrition,
-    sexe,
-    taille: parseInt(taille),
-    niveauActivite: parseFloat(niveauActivite)
-  };
-  if (objectif !== "Garder la forme") {
-    dataToSend.poidsObjectif = parseInt(poidsObjectif);
-  }
-
-  try {
-    const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(dataToSend)
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      user.set(data.user);
-      navigate("/");
+  // toggle sélection/désélection d'un jour dispo
+  function toggleJour(jour) {
+    if (joursDisponibles.includes(jour)) {
+      joursDisponibles = joursDisponibles.filter(j => j !== jour);
     } else {
-      const data = await res.json();
-      alert("Erreur : " + (data.message || "Échec de l'enregistrement"));
+      joursDisponibles = [...joursDisponibles, jour];
     }
-  } catch (error) {
-    alert("Erreur lors de l'envoi au serveur.");
   }
-}
 
-$: poidsObjectifOptions = poids.filter(p => {
-  const poidsActuelKg = parseInt(poidsActuel);
-  const pKg = parseInt(p);
-  if (objectif === "Perdre du poids") {
-    return pKg < poidsActuelKg;
-  } else if (objectif === "Gagner du muscle") {
-    return pKg > poidsActuelKg;
-  } else {
-    return false; 
+  // soumet les données d'évaluation au backend
+  async function soumettreEvaluation() {
+    if (!currentUser || !currentUser._id) {
+      alert("Utilisateur non connecté.");
+      return;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Token non trouvé, veuillez vous reconnecter.");
+      return;
+    }
+
+    const dataToSend = {
+      poids: parseInt(poidsActuel),
+      age: parseInt(age),
+      dispo: joursDisponibles.join(', '),
+      objectif,
+      experience,
+      entrainement,
+      frequence,
+      planNutrition,
+      sexe,
+      taille: parseInt(taille),
+      niveauActivite: parseFloat(niveauActivite)
+    };
+
+    // ajoute poidsObjectif seulement si objectif concerné
+    if (objectif !== "Garder la forme") {
+      dataToSend.poidsObjectif = parseInt(poidsObjectif);
+    }
+
+    try {
+      const res = await fetch(`http://localhost:4201/user/evaluation/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(dataToSend)
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        user.set(data.user); // met à jour store user
+        navigate("/");       // redirection accueil
+      } else {
+        const data = await res.json();
+        alert("Erreur : " + (data.message || "Échec de l'enregistrement"));
+      }
+    } catch (error) {
+      alert("Erreur lors de l'envoi au serveur.");
+    }
   }
-});
 
+  // options de poids objectif filtrées selon l'objectif et poids actuel
+  $: poidsObjectifOptions = poids.filter(p => {
+    const poidsActuelKg = parseInt(poidsActuel);
+    const pKg = parseInt(p);
+    if (objectif === "Perdre du poids") {
+      return pKg < poidsActuelKg;
+    } else if (objectif === "Gagner du muscle") {
+      return pKg > poidsActuelKg;
+    } else {
+      return false; // pas d'option poids objectif pour "Garder la forme"
+    }
+  });
 </script>
+
 
 
 

@@ -1,46 +1,58 @@
 <script>
   import { Link } from "svelte-routing";
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { user } from './common/auth';
-  import { tick } from 'svelte';
 
+  // Liste des suivis récupérés depuis le serveur
   let suivis = [];
-  let loading = true;
-  let message = null;
-  let messageType = "success"; // or "error"
 
+  // Indicateur de chargement
+  let loading = true;
+
+  // Message utilisateur (succès ou erreur)
+  let message = null;
+  let messageType = "success"; // ou "error"
+
+  // Variables pour gérer le modal de confirmation
   let confirmAction = null;
   let showConfirmModal = false;
   let confirmText = "";
 
+  // Affiche un message temporaire à l'utilisateur
   function showMessage(text, type = "success") {
     message = text;
     messageType = type;
+    // Efface le message après 3 secondes
     tick().then(() => setTimeout(() => message = null, 3000));
   }
 
+  // Ouvre le modal de confirmation avec une action à confirmer
   function demanderConfirmation(action, texte) {
     confirmAction = action;
     confirmText = texte;
     showConfirmModal = true;
   }
 
+  // Confirme l'action et ferme le modal
   function confirmer() {
     if (confirmAction) confirmAction();
     showConfirmModal = false;
     confirmAction = null;
   }
 
+  // Annule la confirmation et ferme le modal
   function annulerConfirmation() {
     showConfirmModal = false;
     confirmAction = null;
   }
 
+  // Charge les suivis à la montée du composant
   onMount(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
+      // Requête pour récupérer les suivis de l'utilisateur
       const res = await fetch("http://localhost:4201/user/suivi", {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -48,16 +60,19 @@
       suivis = data;
     } catch (err) {
       console.error("Erreur récupération des suivis :", err);
+      showMessage("Erreur lors du chargement des suivis.", "error");
     } finally {
       loading = false;
     }
   });
 
+  // Formatte une date au format local lisible
   function formatDate(dateStr) {
     const d = new Date(dateStr);
     return d.toLocaleDateString();
   }
 
+  // Supprime une entrée poids dans l'historique
   async function supprimerPoids(id) {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -71,6 +86,7 @@
       if (!res.ok) throw new Error("Erreur lors de la suppression");
 
       const data = await res.json();
+      // Met à jour le store utilisateur avec les données modifiées
       user.set(data.user);
       showMessage("Poids supprimé !", "success");
     } catch (err) {
@@ -79,8 +95,10 @@
     }
   }
 
+  // Supprime un suivi complet
   async function supprimerSuivi(id) {
     const token = localStorage.getItem("token");
+    if (!token) return;
 
     try {
       const res = await fetch(`http://localhost:4201/user/suivi/${id}`, {
@@ -93,6 +111,7 @@
 
       if (!res.ok) throw new Error("Échec de la suppression");
 
+      // Mise à jour locale de la liste après suppression
       suivis = suivis.filter(s => s._id !== id);
       showMessage("Suivi supprimé !", "success");
     } catch (err) {
@@ -101,6 +120,7 @@
     }
   }
 </script>
+
 
 <style>
   .suivi-container {
